@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  server:
+    build:
+      # dev
+      context: ./
+      dockerfile: ./server/Dockerfile.standalone
+    env_file:
+      - ./.env
+    volumes:
+      - ./server:/server/app
+    restart: unless-stopped
+
+volumes:
+  api:
+    driver: local
