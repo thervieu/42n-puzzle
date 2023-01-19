@@ -5,18 +5,64 @@ import (
 	"time"
 	"strings"
 	"strconv"
+	"errors"
 )
 
-type OptionsRequestData struct {
+type RequestOptionsData struct {
 	search		string	`json:"search"`
 	heuristic	string	`json:"heuristic"`
 }
 
 type RequestSolveData struct {
-	Options		OptionsRequestData	`json:"options"`
-	State		string				`json:"state"`
-	Analyzer	Analyzer			`json:"analyzer"`
+	Options		RequestOptionsData	`json:"options"`
+	State		[]uint16			`json:"state"`
 }
+
+func (r *RequestOptionsData) SanitizeOptions() (err error) {
+	if (r.Options.search != "greedy" || r.Options.search != "greedy") {
+		return errors.New("Bad Request: Options.search has a wrong value")
+	}
+	if (r.Options.heuristic != "euclidean" || r.Options.heuristic != "manhattan" ||
+		r.Options.heuristic != "hamming") {
+		return errors.New("Bad Request: Options.search has a wrong value")
+	}
+
+	return nil
+}
+
+func (r *RequestSolveData) SanitizeState() (error) {
+
+	int_sqrt := int(math.Sqrt(len(r.State)))
+	if (int_sqrt * int_sqrt != len(r.State)) {
+		return errors.New("Bad Request: State length is not a squared number")
+	}
+	if (int_sqrt * int_sqrt != len(r.State)) {
+		return errors.New("Bad Request: State length is not a squared number")
+	}
+
+	slice := make([]int, len(r.State))
+	for i,v := range slice {
+		if (v >= len(r.State)) {
+			return errors.New("Bad Request: State has a value bigger than its length")
+		} else if (slice[v] == 1) {
+			return errors.New("Bad Request: State has a value bigger than its length")
+		} else { // slice[v] exists and is equal to 0
+			slice[v] = 1
+		}
+	}
+
+	return nil
+}
+
+func (r *RequestSolveData) Sanitize() (error) {
+	if err := r.Options.SanitizeOptions(); err != nil {
+		return err
+	}
+	if err := r.SanitizeState(); err != nil {
+		return err
+	}
+}
+
 
 func (r *RequestSolveData) extractOptions() (options Options, err error) {
 	options.search = r.Options.search

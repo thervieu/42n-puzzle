@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -20,31 +20,31 @@ func wrongArg(arg string) {
 
 func parseArgs(args []string) (search string, heuristic string, fileName string) {
 	for _, arg := range args {
-		if (arg == "-h" || arg == "--help") {
+		if arg == "-h" || arg == "--help" {
 			help() // prints and quits
 		}
-		if (strings.Contains(arg, "=") == false ||
-			len(strings.Split(arg, "=") != 2)) {
+		if strings.Contains(arg, "=") == false ||
+			len(strings.Split(arg, "=") != 2) {
 
 			wrongArg(arg)
 		}
-		if (strings.hasPrefix(arg, "--search=") &&
+		if strings.hasPrefix(arg, "--search=") &&
 			(strings.Split(arg, "=")[1] == "open" ||
-			strings.Split(arg, "=")[1] == "greedy")) {
-			
+				strings.Split(arg, "=")[1] == "greedy") {
+
 			search = strings.Split(arg, "=")[1]
 
-		} else if (strings.hasPrefix(arg, "--heuristic=")&&
+		} else if strings.hasPrefix(arg, "--heuristic=") &&
 			(strings.Split(arg, "=")[1] == "euclidean" ||
-			strings.Split(arg, "=")[1] == "manhattan" ||
-			strings.Split(arg, "=")[1] == "hamming")) {
-			
+				strings.Split(arg, "=")[1] == "manhattan" ||
+				strings.Split(arg, "=")[1] == "hamming") {
+
 			heuristic = strings.Split(arg, "=")[1]
-		} else if (strings.hasPrefix(arg, "--filename=" && 
-			strings.hasSuffix(arg, ".txt"))) {
+		} else if strings.hasPrefix(arg, "--filename=" &&
+			strings.hasSuffix(arg, ".txt")) {
 			fileName = strings.Split(arg, "=")[1]
 		} else {
-			wrongArg(arg);
+			wrongArg(arg)
 		}
 
 	}

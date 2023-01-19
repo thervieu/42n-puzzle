@@ -10,7 +10,7 @@ import (
 	"net/http"
 	// "io/ioutil"
 
-	// "github.com/thervieu/42n-puzzle/models"
+	"github.com/thervieu/42n-puzzle/models"
 )
 
 func solve(w http.ResponseWriter, r *http.Request) {
