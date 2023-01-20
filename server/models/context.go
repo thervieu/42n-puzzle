@@ -4,6 +4,11 @@ import (
 	"encoding/json"
 )
 
+type Point struct {
+	x int
+	y int
+}
+
 type Context struct {
 	Puzzle				*Puzzle
 	Depth				int
@@ -37,8 +42,52 @@ func (c *Context) Next(move string) (next *Context) {
 // implement heuristics
 // set function pointer in extractOptions
 
-func MakeGoal(size uint8) (goal []int) {
-	goal := make([]int, size * size)
+func MisplacedTiles(size int, puzzle []int, goal []int) (uint16) {
+	heuristic := 0
+	for i, v := range puzzle {
+		if (i % 3 != goal[v].x || i / 3 != goal[v].y) {
+			heuristic += 1
+		}
+	}
+	return heuristic
+}
+
+func ManhattanDistance(size int, puzzle []int, goal []int) (uint16) {
+	heuristic := 0
+	for i, v := range puzzle {
+		if (v != 0 && i % 3 != goal[v].x || i / 3 != goal[v].y) {
+			heuristic += math.Abs((i % 3) - goal[v].x) + math.Abs((i / 3) - goal[v].y)
+		}
+	}
+	return heuristic
+}
+
+// https://medium.com/swlh/looking-into-k-puzzle-heuristics-6189318eaca2
+func LinearConflict(size int, puzzle []int, goal []int) (uint16) {
+	heuristic := 0
+	for i, v := range puzzle {
+		if (v != 0 && i % 3 != goal[v].x || i / 3 != goal[v].y) {
+			heuristic += math.Abs((i % 3) - goal[v].x) + math.Abs((i / 3) - goal[v].y)
+			if (i % 3 == goal[v].x) {
+				for k := i + 3; k < len(puzzle); k += 3 {
+					if (puzzle[k] != 0 && goal[puzzle[k]].y != k / 3) {
+						heuristic += 2
+					}
+				}
+			} else {
+				for k := i + 1; k < size; k += 1 {
+					if (puzzle[k] != 0 && goal[puzzle[k]].x != k % 3) {
+						heuristic += 2
+					}
+				}
+			}
+		}
+	}
+	return heuristic
+}
+
+func MakeGoal(size int) (goal []Point) {
+	goal := make([]Point, size * size)
 	for i := range goal {
 		goal[i] = -1
 	}
@@ -46,15 +95,15 @@ func MakeGoal(size uint8) (goal []int) {
 	x, y := 0
 	ix, iy := 1, 0
 	for {
-		goal[x + y*s] = cur
+		goal[cur] = Point{x, y}
 		if (cur == 0) {
 			break
 		}
 		cur += 1
-		if (x + ix == s || x + ix < 0 || (ix != 0 && goal[x + ix + y*s] != -1)) {
+		if (x + ix == size || x + ix < 0 || (ix != 0 && goal[x + ix + y*size] != -1)) {
 			iy = ix
 			ix = 0
-		} else if  (y + iy == s || y + iy < 0 || (iy != 0 && goal[x + (y+iy)*s] != -1)) {
+		} else if  (y + iy == size || y + iy < 0 || (iy != 0 && goal[x + (y+iy)*size] != -1)) {
 			ix = -iy
 			iy = 0
 		}
