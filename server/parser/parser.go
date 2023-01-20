@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"github.com/thervieu/42n-puzzle/models"
 )
 
 func help() {
@@ -115,19 +116,20 @@ func parseSize(strSplitted []string) (int, error) {
 func concatStrArr(strSplitted []string) (str string) {
 	str = ""
 	for _, word := range strSplitted {
-		str += word
+		str += word + " "
 	}
-	return str
+	return str[0:len(str)-1]
 }
 
-func parsePuzzleArray(size int, p []int, strSplitted []string) ([]int, error) {
+func parsePuzzleArray(size int, strSplitted []string) ([]int, error) {
+	arr := []int{}
 
 	if size != len(strSplitted) {
-		return []int{}, errors.New("line: " + concatStrArr(strSplitted) + " size (" + strconv.Itoa(size) + ") differs from number of integers (" + strconv.Itoa(len(strSplitted)) + ")")
+		return []int{}, errors.New("error: file: line: '" + concatStrArr(strSplitted) + "' number of integers (" + strconv.Itoa(len(strSplitted)) + ") differs from  size (" + strconv.Itoa(size) + ")") 
 	}
 	for _, word := range strSplitted {
 		if isStringNumerical(word) == false {
-			return []int{}, errors.New("word: " + word + " is not numeral")
+			return []int{}, errors.New("error: file: " + word + " is not numeral")
 		}
 
 		number, err := strconv.Atoi(word)
@@ -136,15 +138,13 @@ func parsePuzzleArray(size int, p []int, strSplitted []string) ([]int, error) {
 		}
 
 		if number >= size*size {
-			return []int{}, errors.New("number " + strconv.Itoa(number) + " is too big for a " + strconv.Itoa(size) + "-puzzle")
-		}
-		if contains(p, number) { // number already exists
-			return []int{}, errors.New("number " + strconv.Itoa(number) + " already in array")
+			return []int{}, errors.New("error: file: number " + strconv.Itoa(number) + " is too big for a " + strconv.Itoa(size) + "-puzzle")
 		}
 
-		p = append(p, number)
+		arr = append(arr, number)
 	}
-	return p, nil
+
+	return arr, nil
 }
 
 func ParseFile(fileName string) (int, []int, error) {
@@ -163,6 +163,9 @@ func ParseFile(fileName string) (int, []int, error) {
 	puzzleArray := []int{}
 	for fileScanner.Scan() {
 		str := fileScanner.Text()
+		if str == "" {
+			continue
+		}
 
 		if strings.HasPrefix(str, "#") { // if comment line
 			continue
@@ -184,7 +187,7 @@ func ParseFile(fileName string) (int, []int, error) {
 			continue
 		}
 
-		arr, err := parsePuzzleArray(size, puzzleArray, strSplitted)
+		arr, err := parsePuzzleArray(size, strSplitted)
 		if err != nil {
 			readFile.Close()
 			return 0, []int{}, err
@@ -198,5 +201,12 @@ func ParseFile(fileName string) (int, []int, error) {
 	}
 
 	readFile.Close()
+
+	err = models.VerifValuesSlice(puzzleArray, false)
+
+	if err != nil {
+		return 0, []int{}, err
+
+	}
 	return size, puzzleArray, nil
 }

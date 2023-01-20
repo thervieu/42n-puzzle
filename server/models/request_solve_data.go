@@ -29,6 +29,30 @@ func (r *RequestOptionsData) SanitizeOptions() (err error) {
 	return nil
 }
 
+func VerifValuesSlice(arr []int, typeError bool) (error) {
+
+	begError := ""
+	if (typeError == true)  {
+		begError = "Bad Request: State: " 
+	} else {
+		begError = "error: file: "
+	}
+	slice := make([]int, len(arr))
+	for _,v := range arr {
+		if (v < 0) {
+			return errors.New(begError + "negative number")
+		} 
+		if (v >= len(arr)) {
+			return errors.New(begError + "value bigger than its length")
+		} else if (slice[v] == 1) {
+			return errors.New(begError + "value " + strconv.Itoa(v) + " duplicate ")
+		} else { // slice[v] exists and is equal to 0
+			slice[v] = 1
+		}
+	}
+	return nil
+}
+
 func (r *RequestSolveData) SanitizeState() (error) {
 
 	int_sqrt := int(math.Sqrt(float64(len(r.State))))
@@ -39,21 +63,7 @@ func (r *RequestSolveData) SanitizeState() (error) {
 		return errors.New("Bad Request: State length is not a squared number")
 	}
 
-	slice := make([]int, len(r.State))
-	for _,v := range r.State {
-		if (v < 0) {
-			return errors.New("Bad Request: State has a negative number")
-		} 
-		if (v >= len(r.State)) {
-			return errors.New("Bad Request: State has a value bigger than its length")
-		} else if (slice[v] == 1) {
-			return errors.New("Bad Request: State has a value bigger than its length")
-		} else { // slice[v] exists and is equal to 0
-			slice[v] = 1
-		}
-	}
-
-	return nil
+	return VerifValuesSlice(r.State, true)
 }
 
 func (r *RequestSolveData) Sanitize() (error) {
@@ -124,7 +134,7 @@ func (r *RequestSolveData) ComputeContext() (context *Context, err error) {
 	if puzzle, err := r.extractPuzzle(); err != nil {
 		return context, err
 	} else {
-		context.Puzzle = &puzzle
+		context.Puzzle = puzzle
 	}
 
 	context.Analyzer = InitAnalyzer()

@@ -1,7 +1,7 @@
 package models
 
 import (
-
+	
 )
 
 type Puzzle struct {
@@ -11,12 +11,11 @@ type Puzzle struct {
 	parent_move string
 }
 
-func InitializePuzzle(size int, order []int, pos_zero int) (p *Puzzle)  {
+func InitializePuzzle(size int, order []int, pos_zero int) (p Puzzle)  {
 	p.size = size
 	p.numbers = order
 	p.pos_zero = pos_zero
 	p.parent_move = ""
-
 	return
 }
 

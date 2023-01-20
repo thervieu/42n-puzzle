@@ -11,7 +11,7 @@ type Point struct {
 
 type Context struct {
 	Goal				[]Point
-	Puzzle				*Puzzle
+	Puzzle				Puzzle
 	Depth				int
 	HeuristicFunc		func (int, []int, []Point) (int)
 	SearchFormula		bool // false is uniform-cost, true is greedy
@@ -20,7 +20,7 @@ type Context struct {
 	Parent				*Context
 }
 
-func (c *Context) Next(p *Puzzle) (next *Context) {
+func (c *Context) Next(p Puzzle) (next *Context) {
 	// move here
 	next.Puzzle = p
 	next.Goal = c.Goal
@@ -30,7 +30,8 @@ func (c *Context) Next(p *Puzzle) (next *Context) {
 	return
 }
 
-func BuildContextCLI(size int, search string, heuristic string, arr []int) (c *Context) {
+func BuildContextCLI(size int, search string, heuristic string, arr []int) (c Context) {
+
 	c.Puzzle = InitializePuzzle(size, arr, index(0, arr))
 	c.Goal = MakeGoal(c.Puzzle.size)
 	c.Depth = 0

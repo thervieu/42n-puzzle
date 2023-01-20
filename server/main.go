@@ -20,12 +20,14 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		
 		size, startArray, err := parser.ParseFile(fileName)
-
 		if (err != nil) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		models.BuildContextCLI(size, search, heuristic, startArray)
+
+		ctx := models.BuildContextCLI(size, search, heuristic, startArray)
+		fmt.Println(ctx.Puzzle)
 	}
 }
