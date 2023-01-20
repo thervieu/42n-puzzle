@@ -109,7 +109,13 @@ func (r *RequestSolveData) ComputeContext() (context *Context, err error) {
 		return context, err
 	} else {
 		context.search = options.search == "greedy"
-		context.DistanceHeuristic = // if else set function evaluating string options.heuristic
+		if (options.heuristic == "euclidean") {
+			context.HeuristicFunc = // impl heuristic and give reference here
+		} else if (options.heuristic == "manhattan") {
+			context.HeuristicFunc = // same
+		} else if (options.heuristic == "hamming") {
+			context.HeuristicFunc = // same
+		}
 	}
 
 	if puzzle, err := r.extractPuzzle(); err != nil {
