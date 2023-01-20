@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	// "log"
-	"time"
+	// "time"
 	"encoding/json"
 	// "strings"
 	
@@ -13,7 +13,7 @@ import (
 	"github.com/thervieu/42n-puzzle/models"
 )
 
-func solve(w http.ResponseWriter, r *http.Request) {
+func solveRouteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		// If the request method is not POST
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -37,25 +37,25 @@ func solve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Compute a new context from the data
-	context, err := data.ComputeContext()
+	// context, err := data.ComputeContext()
 
-	if err != nil {
-		// If the context computation failed
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	start := time.Now()
-	solved := models.Solve(context)
+	// if err != nil {
+	// 	// If the context computation failed
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+	// start := time.Now()
+	// solved := models.Solve(context)
 	result := "bonjour"
 
-	elapsed_time := time.Now().Sub(start).Milliseconds()
-	_json, err := solved.ToJSON(elapsed_time)
+	// elapsed_time := time.Now().Sub(start).Milliseconds()
+	// _json, err := solved.ToJSON(elapsed_time)
 	
-	if err != nil {
-		// If the context computation failed
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// if err != nil {
+	// 	// If the context computation failed
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
 
 	fmt.Fprintf(w, result)
 }

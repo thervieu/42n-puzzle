@@ -11,13 +11,13 @@ import (
 )
 
 
-func Start(args []string) {
+func Start() {
 	port := utils.ReadPort()
 
 	mux := http.NewServeMux()
 
 	// register the solve handler to the mux
-	mux.HandleFunc("/solve", solve)
+	mux.HandleFunc("/solve", solveRouteHandler)
 
 	// Wrapp mux in the CORS middleware
 	wrapped_mux := AllowCORS(mux)
