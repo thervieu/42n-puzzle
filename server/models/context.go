@@ -25,18 +25,15 @@ func (c *Context) Next(p *Puzzle) (next *Context) {
 	next.Puzzle = p
 	next.Goal = c.Goal
 	next.Depth = c.Depth + 1
-	next.HeuristicFunc = c.HeuristicFunc
-	next.SearchFormula = c.SearchFormula
-
-	heurValue := next.HeuristicFunc(next.Puzzle.size, next.Puzzle.numbers, next.Goal)
-	if (next.SearchFormula) { // greedy
-		next.HeuristicValue = heurValue
-	} else {
-		next.HeuristicValue = heurValue + c.HeuristicValue
-	}
-
-	next.Analyzer = c.Analyzer
 	next.Parent = c
+
+	return
+}
+
+func BuildContextCLI(size int, search string, heuristic string, arr []int) (c *Context) {
+	c.Puzzle = InitializePuzzle(size, arr, index(0, arr))
+	c.Goal = MakeGoal(c.Puzzle.size)
+	c.Depth = 0
 
 	return
 }

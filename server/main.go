@@ -4,16 +4,28 @@ import (
 	"os"
 	"fmt"
 	"github.com/thervieu/42n-puzzle/server"
+	"github.com/thervieu/42n-puzzle/parser"
+	"github.com/thervieu/42n-puzzle/models"
 )
 
 func main() {
 	args := os.Args[1:]
 
 	if (len(args) == 0) {
-		fmt.Println("no args");
-		server.start();
+		server.Start();
 	} else {
-		fmt.Println("at least one arg");
+		search, heuristic, fileName, err := parser.ParseArgs(args)
 
+		if (err != nil) {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		size, startArray, err := parser.ParseFile(fileName)
+
+		if (err != nil) {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		models.BuildContextCLI(size, search, heuristic, startArray)
 	}
 }

@@ -11,18 +11,21 @@ type Puzzle struct {
 	parent_move string
 }
 
-func (p *Puzzle) initialize(size int, order []int, pos_zero int, move string) {
+func InitializePuzzle(size int, order []int, pos_zero int) (p *Puzzle)  {
 	p.size = size
 	p.numbers = order
 	p.pos_zero = pos_zero
-	p.parent_move = move
+	p.parent_move = ""
+
+	return
 }
 
-func copy(p *Puzzle) *Puzzle {
+func (p *Puzzle) Copy() *Puzzle {
 	newPuzzle := &Puzzle{}
 	newPuzzle.parent_move = p.parent_move
 	newPuzzle.size = p.size
 	newPuzzle.numbers = p.numbers
+
 	return (newPuzzle)
 }
 
@@ -60,23 +63,23 @@ func (p *Puzzle) move(move string) {
 
 func (p *Puzzle) next_states() []*Puzzle {
 	next_states := []*Puzzle{}
-	if (p.pos_zero >= p.size && p.parent_move == "U") {
-		copy := copy(p)
+	if (p.pos_zero >= p.size && p.parent_move != "U") {
+		copy := p.Copy()
 		copy.move("D")
 		next_states = append(next_states, copy)
 	}
-	if (p.pos_zero <= (p.size * p.size) - 1 - p.size && p.parent_move == "D") {
-		copy := copy(p)
+	if (p.pos_zero <= (p.size * p.size) - 1 - p.size && p.parent_move != "D") {
+		copy := p.Copy()
 		copy.move("U")
 		next_states = append(next_states, copy)
 	}
-	if (p.pos_zero % p.size != 0 && p.parent_move == "L") {
-		copy := copy(p)
+	if (p.pos_zero % p.size != 0 && p.parent_move != "L") {
+		copy := p.Copy()
 		copy.move("R")
 		next_states = append(next_states, copy)
 	}
-	if ((p.pos_zero + 1) % p.size != 0 && p.parent_move == "R") {
-		copy := copy(p)
+	if ((p.pos_zero + 1) % p.size != 0 && p.parent_move != "R") {
+		copy := p.Copy()
 		copy.move("L")
 		next_states = append(next_states, copy)
 	}

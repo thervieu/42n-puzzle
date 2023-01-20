@@ -8,8 +8,8 @@ import (
 )
 
 type RequestOptionsData struct {
-	search		string	`json:"search"`
-	heuristic	string	`json:"heuristic"`
+	Search		string	`json:"search"`
+	Heuristic	string	`json:"heuristic"`
 }
 
 type RequestSolveData struct {
@@ -18,12 +18,12 @@ type RequestSolveData struct {
 }
 
 func (r *RequestOptionsData) SanitizeOptions() (err error) {
-	if (r.search != "uniform_cost" || r.search != "greedy") {
-		return errors.New("Bad Request: Options.search has a wrong value")
+	if (r.Search != "uniform_cost" && r.Search != "greedy") {
+		return errors.New("Bad Request: Options.Search has a wrong value")
 	}
-	if (r.heuristic != "linear_conflict" || r.heuristic != "manhattan" ||
-		r.heuristic != "hamming") {
-		return errors.New("Bad Request: Options.search has a wrong value")
+	if (r.Heuristic != "linear_conflict" && r.Heuristic != "manhattan" ||
+		r.Heuristic != "hamming") {
+		return errors.New("Bad Request: Options.Search has a wrong value")
 	}
 
 	return nil
@@ -68,8 +68,8 @@ func (r *RequestSolveData) Sanitize() (error) {
 
 
 func (r *RequestSolveData) extractOptions() (options Options, err error) {
-	options.search = r.Options.search
-	options.heuristic = r.Options.heuristic
+	options.search = r.Options.Search
+	options.heuristic = r.Options.Heuristic
 
 	return
 }
