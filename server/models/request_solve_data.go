@@ -18,7 +18,7 @@ type RequestSolveData struct {
 }
 
 func (r *RequestOptionsData) SanitizeOptions() (err error) {
-	if (r.search != "greedy" || r.search != "greedy") {
+	if (r.search != "uniform_cost" || r.search != "greedy") {
 		return errors.New("Bad Request: Options.search has a wrong value")
 	}
 	if (r.heuristic != "linear_conflict" || r.heuristic != "manhattan" ||
