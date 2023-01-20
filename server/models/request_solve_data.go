@@ -2,7 +2,6 @@ package models
 
 import (
 	"math"
-	"time"
 	"strings"
 	"strconv"
 	"errors"
@@ -15,15 +14,15 @@ type RequestOptionsData struct {
 
 type RequestSolveData struct {
 	Options		RequestOptionsData	`json:"options"`
-	State		[]uint16			`json:"state"`
+	State		[]int			`json:"state"`
 }
 
 func (r *RequestOptionsData) SanitizeOptions() (err error) {
-	if (r.Options.search != "greedy" || r.Options.search != "greedy") {
+	if (r.search != "greedy" || r.search != "greedy") {
 		return errors.New("Bad Request: Options.search has a wrong value")
 	}
-	if (r.Options.heuristic != "euclidean" || r.Options.heuristic != "manhattan" ||
-		r.Options.heuristic != "hamming") {
+	if (r.heuristic != "linear_conflict" || r.heuristic != "manhattan" ||
+		r.heuristic != "hamming") {
 		return errors.New("Bad Request: Options.search has a wrong value")
 	}
 
@@ -32,7 +31,7 @@ func (r *RequestOptionsData) SanitizeOptions() (err error) {
 
 func (r *RequestSolveData) SanitizeState() (error) {
 
-	int_sqrt := int(math.Sqrt(len(r.State)))
+	int_sqrt := int(math.Sqrt(float64(len(r.State))))
 	if (int_sqrt * int_sqrt != len(r.State)) {
 		return errors.New("Bad Request: State length is not a squared number")
 	}
@@ -41,7 +40,10 @@ func (r *RequestSolveData) SanitizeState() (error) {
 	}
 
 	slice := make([]int, len(r.State))
-	for i,v := range slice {
+	for _,v := range r.State {
+		if (v < 0) {
+			return errors.New("Bad Request: State has a negative number")
+		} 
 		if (v >= len(r.State)) {
 			return errors.New("Bad Request: State has a value bigger than its length")
 		} else if (slice[v] == 1) {
@@ -61,6 +63,7 @@ func (r *RequestSolveData) Sanitize() (error) {
 	if err := r.SanitizeState(); err != nil {
 		return err
 	}
+	return nil
 }
 
 
@@ -95,7 +98,7 @@ func index(needle int, haystack []int) (int) {
 
 func (r *RequestSolveData) extractPuzzle() (puzzle Puzzle, err error) {
 
-	puzzle.numbers = generateNumbersSlice(r.State)
+	puzzle.numbers = r.State
 	puzzle.size = int(math.Sqrt(float64((len(puzzle.numbers)))))
 	puzzle.parent_move = ""
 	puzzle.pos_zero = index(0, puzzle.numbers)
@@ -108,23 +111,23 @@ func (r *RequestSolveData) ComputeContext() (context *Context, err error) {
 	if options, err := r.extractOptions(); err != nil {
 		return context, err
 	} else {
-		context.search = options.search == "greedy"
-		if (options.heuristic == "euclidean") {
-			context.HeuristicFunc = // impl heuristic and give reference here
+		context.SearchFormula = options.search == "greedy"
+		if (options.heuristic == "hamming") {
+			context.HeuristicFunc = HammingDistance // impl heuristic and give reference here
 		} else if (options.heuristic == "manhattan") {
-			context.HeuristicFunc = // same
-		} else if (options.heuristic == "hamming") {
-			context.HeuristicFunc = // same
+			context.HeuristicFunc = ManhattanDistance// same
+		} else if (options.heuristic == "linear_conflict") {
+			context.HeuristicFunc = LinearConflict// same
 		}
 	}
 
 	if puzzle, err := r.extractPuzzle(); err != nil {
 		return context, err
 	} else {
-		context.Puzzle = puzzle
+		context.Puzzle = &puzzle
 	}
 
-	r.Analyzer = InitAnalyzer()
+	context.Analyzer = InitAnalyzer()
 
 	return
 }

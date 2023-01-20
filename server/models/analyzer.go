@@ -11,7 +11,6 @@ type Analyzer struct {
 
 
 
-func InitAnalyzer() (anlyzer Analyzer) {
-
-	return
+func InitAnalyzer() (Analyzer) {
+	return Analyzer{0, 0}
 }

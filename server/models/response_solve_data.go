@@ -15,13 +15,13 @@ type ResponseSolveData struct {
 	Analyzer	Analyzer			`json:"analyzer"`
 }
 
-func (r *ResponseSolveData) computeResponseSolve(context *Context, time int64, time_complexity int, space_complexity int) {
+func (r *ResponseSolveData) computeResponseSolve(ctx *Context, time int64, time_complexity int, space_complexity int) {
 	r.Complexity = SolveComplexityData{
 		Time: time,
 		time_complexity: time_complexity,
 		space_complexity: space_complexity,
 	}
-	r.States = c.ComputeTimeline()
+	r.States = ctx.ComputeTimeline()
 
 	return 
 }

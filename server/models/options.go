@@ -10,6 +10,6 @@ const (
 )
 
 type Options struct {
-	search byte
-	heuristic byte
+	search string
+	heuristic string
 }
