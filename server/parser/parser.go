@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
 	"github.com/thervieu/42n-puzzle/models"
 )
 
@@ -25,31 +26,30 @@ func ParseArgs(args []string) (search string, heuristic string, fileName string,
 		if arg == "-h" || arg == "--help" {
 			help() // prints and quits
 		}
-		
+
 		if strings.Contains(arg, "=") == false ||
 			len(strings.Split(arg, "=")) != 2 {
-			fmt.Println("no equal")
-			return "", "", "", errors.New("n-puzzle: error: parsing: wrong argument '" + arg + "'\nrun program with --help for correct arguments")
+			return "", "", "", errors.New("error: wrong argument '" + arg + "'\nrun program with --help for correct arguments")
 		}
 
 		if strings.HasPrefix(arg, "--search=") &&
 			len(strings.Split(arg, "=")) == 2 {
 
-			if (strings.Split(arg, "=")[1] != "uniform" &&
-				strings.Split(arg, "=")[1] != "greedy") {
-				
-				return "", "", "", errors.New("n-puzzle: error: parsing: wrong argument for search '" + strings.Split(arg, "=")[1] + "'")
+			if strings.Split(arg, "=")[1] != "uniform" &&
+				strings.Split(arg, "=")[1] != "greedy" {
+
+				return "", "", "", errors.New("error: wrong argument for search '" + strings.Split(arg, "=")[1] + "'")
 			}
 			search = strings.Split(arg, "=")[1]
 
 		} else if strings.HasPrefix(arg, "--heuristic=") &&
 			len(strings.Split(arg, "=")) == 2 {
-				
-			if (strings.Split(arg, "=")[1] != "hamming" &&
+
+			if strings.Split(arg, "=")[1] != "hamming" &&
 				strings.Split(arg, "=")[1] != "manhattan" &&
-				strings.Split(arg, "=")[1] != "linear_conflict") {
-				
-				return "", "", "", errors.New("n-puzzle: error: parsing: wrong argument for heuristic '" + strings.Split(arg, "=")[1] + "'")
+				strings.Split(arg, "=")[1] != "linear_conflict" {
+
+				return "", "", "", errors.New("error: wrong argument for heuristic '" + strings.Split(arg, "=")[1] + "'")
 			}
 
 			heuristic = strings.Split(arg, "=")[1]
@@ -58,23 +58,23 @@ func ParseArgs(args []string) (search string, heuristic string, fileName string,
 			len(strings.Split(arg, "=")) == 2 &&
 			len(strings.Split(strings.Split(arg, "=")[1], ".")) == 2 {
 
-			if (strings.HasSuffix(arg, ".txt") == false) {
-				return "", "", "", errors.New("n-puzzle: error: parsing: wrong argument for file '" + strings.Split(arg, "=")[1] + "'. Should end with .txt")
+			if strings.HasSuffix(arg, ".txt") == false {
+				return "", "", "", errors.New("error: wrong argument for file '" + strings.Split(arg, "=")[1] + "'. Should end with .txt")
 			}
 
 			fileName = strings.Split(arg, "=")[1]
-			
-			} else {
 
-			return "", "", "", errors.New("n-puzzle: parsing: error: wrong argument '" + arg + "'\nrun program with --help for correct arguments")
+		} else {
+
+			return "", "", "", errors.New("error: wrong argument '" + arg + "'\nrun program with --help for correct arguments")
 		}
-
 	}
 
 	if search == "" || heuristic == "" || fileName == "" {
-		return "", "", "", errors.New("n-puzzle: parsing: arguments: some arguments were not given. See help.")
+		return "", "", "", errors.New("arguments: some arguments were not given. See help.")
 	}
 
+	err = nil
 	return
 }
 func isStringNumerical(word string) bool {
@@ -102,6 +102,10 @@ func parseSize(strSplitted []string) (int, error) {
 		return 0, errors.New("size has too many arguments")
 	}
 
+	if isStringNumerical(strSplitted[0]) == false {
+		return 0, errors.New("error: file: " + strSplitted[0] + " is not numeral")
+	}
+
 	number, err := strconv.Atoi(strSplitted[0])
 	if err != nil {
 		return 0, errors.New(fmt.Sprintf("err in strconv.Atoi : %T \n %v\n", number, number))
@@ -118,14 +122,14 @@ func concatStrArr(strSplitted []string) (str string) {
 	for _, word := range strSplitted {
 		str += word + " "
 	}
-	return str[0:len(str)-1]
+	return str[0 : len(str)-1]
 }
 
 func parsePuzzleArray(size int, strSplitted []string) ([]int, error) {
 	arr := []int{}
 
 	if size != len(strSplitted) {
-		return []int{}, errors.New("error: file: line: '" + concatStrArr(strSplitted) + "' number of integers (" + strconv.Itoa(len(strSplitted)) + ") differs from  size (" + strconv.Itoa(size) + ")") 
+		return []int{}, errors.New("error: file: line: '" + concatStrArr(strSplitted) + "' number of integers (" + strconv.Itoa(len(strSplitted)) + ") differs from  size (" + strconv.Itoa(size) + ")")
 	}
 	for _, word := range strSplitted {
 		if isStringNumerical(word) == false {
@@ -151,18 +155,19 @@ func ParseFile(fileName string) (int, []int, error) {
 	readFile, err := os.Open(fileName)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return 0, []int{}, err
 	}
 
 	size := 0
 
+	fmt.Println(fileName)
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
 
 	puzzleArray := []int{}
 	for fileScanner.Scan() {
 		str := fileScanner.Text()
+		fmt.Println(str)
 		if str == "" {
 			continue
 		}
@@ -172,7 +177,7 @@ func ParseFile(fileName string) (int, []int, error) {
 		}
 		str = strings.Split(str, "#")[0] // line without comment
 		strSplitted := strings.Fields(str)
-
+		fmt.Println(strSplitted)
 		if size == 0 { // set size on first
 			if len(strSplitted) == 0 {
 				continue
@@ -183,6 +188,7 @@ func ParseFile(fileName string) (int, []int, error) {
 				readFile.Close()
 				return 0, []int{}, err
 			}
+			fmt.Println(number)
 			size = number
 			continue
 		}
@@ -197,7 +203,7 @@ func ParseFile(fileName string) (int, []int, error) {
 
 	if size*size != len(puzzleArray) {
 		readFile.Close()
-		return 0, []int{}, errors.New("error: file " + fileName + ": has " + strconv.Itoa(len(puzzleArray)) + " numbers, need " + strconv.Itoa(size*size))
+		return 0, []int{}, errors.New("error: file: has " + strconv.Itoa(len(puzzleArray)) + " numbers, need " + strconv.Itoa(size*size))
 	}
 
 	readFile.Close()
