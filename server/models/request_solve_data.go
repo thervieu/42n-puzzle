@@ -41,14 +41,14 @@ func VerifValuesSlice(arr []int, typeError bool) (error) {
 	for _,v := range arr {
 		if (v < 0) {
 			return errors.New(begError + "negative number")
-		} 
+		}
 		if (v >= len(arr)) {
 			return errors.New(begError + "value bigger than its length")
-		} else if (slice[v] == 1) {
-			return errors.New(begError + "value " + strconv.Itoa(v) + " duplicate ")
-		} else { // slice[v] exists and is equal to 0
-			slice[v] = 1
 		}
+		if (slice[v] == 1) {
+			return errors.New(begError + "value " + strconv.Itoa(v) + " duplicate ")
+		}
+		slice[v] = 1
 	}
 	return nil
 }
