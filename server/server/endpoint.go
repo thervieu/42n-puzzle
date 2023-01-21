@@ -51,6 +51,7 @@ func solveRouteHandler(w http.ResponseWriter, r *http.Request) {
 		for i := 0; i < 6; i++ {
 			wg.Add(1)
 			go func(i int, puzzle models.Puzzle) {
+				defer wg.Done()
 				responseData[i] = astar.Solve(i, puzzle)
 			}(i, puzzle)
 		}
