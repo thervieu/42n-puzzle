@@ -39,36 +39,6 @@ func BuildContextCLI(size int, search string, heuristic string, arr []int) (c Co
 	return
 }
 
-func MakeGoal(size int) (goal []Point) {
-	goal = make([]Point, size * size)
-	for i := range goal {
-		goal[i] = Point{-1, -1}
-	}
-	cur := 1
-	x, y := 0, 0
-	ix, iy := 1, 0
-	for {
-		goal[cur] = Point{x, y}
-		if (cur == 0) {
-			break
-		}
-		cur += 1
-		if (x + ix == size || x + ix < 0 || (ix != 0 && goal[x + ix + y*size] != Point{-1, -1})) {
-			iy = ix
-			ix = 0
-		} else if  (y + iy == size || y + iy < 0 || (iy != 0 && goal[x + (y+iy)*size] != Point{-1, -1})) {
-			ix = -iy
-			iy = 0
-		}
-		x += ix
-		y += iy
-		if (cur == size * size) {
-			cur = 0
-		}
-	}
-	return 
-}
-
 func (c *Context) ComputeTimeline() (next *Context) {
 	
 	return
