@@ -6,10 +6,13 @@ import (
 	// "time"
 	"encoding/json"
 	// "strings"
-	
+
 	"net/http"
+	"sync"
+
 	// "io/ioutil"
 
+	"github.com/thervieu/42n-puzzle/astar"
 	"github.com/thervieu/42n-puzzle/models"
 )
 
@@ -37,20 +40,34 @@ func solveRouteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Compute a new context from the data
-	// context, err := data.ComputeContext()
+	puzzle, err := data.ExtractPuzzle()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
 
-	// if err != nil {
-	// 	// If the context computation failed
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
+	responseData := make([]models.ResponseSolveData, 6)
+	if data.Option == 6 {
+		var wg sync.WaitGroup
+		for i := 0; i < 6; i++ {
+			wg.Add(1)
+			go func(i int, puzzle models.Puzzle) {
+				responseData[i] = astar.Solve(i, puzzle)
+			}(i, puzzle)
+		}
+		wg.Wait()
+
+	} else {
+		responseData = make([]models.ResponseSolveData, 1)
+		responseData[0] = astar.Solve(data.Option, puzzle)
+	}
+
 	// start := time.Now()
 	// solved := models.Solve(context)
 	result := "bonjour"
 
 	// elapsed_time := time.Now().Sub(start).Milliseconds()
 	// _json, err := solved.ToJSON(elapsed_time)
-	
+
 	// if err != nil {
 	// 	// If the context computation failed
 	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
