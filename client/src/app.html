@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width" />
-		%sveltekit.head%
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+
+<head>
+	<title>N-puzzle 🧩</title>
+	<meta charset="utf-8" />
+	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+	<meta name="viewport" content="width=device-width" />
+	<link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet'>
+
+	<!-- %sveltekit.head% -->
+	<style>
+		body {
+			margin: 0;
+			font-family: 'Pacifico', cursive;
+			color: burlywood;
+
+		}
+	</style>
+</head>
+
+<body data-sveltekit-preload-data="hover">
+	<div>%sveltekit.body%</div>
+</body>
+
 </html>
