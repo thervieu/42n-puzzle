@@ -10,7 +10,6 @@ import (
 	"github.com/thervieu/42n-puzzle/utils"
 )
 
-
 func Start() {
 	port := utils.ReadPort()
 
