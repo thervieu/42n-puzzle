@@ -12,15 +12,14 @@ import (
 
 type SolveData struct {
 	Time             int64    `json:"time"`
+	moves            int      `json:"moves"`
 	Time_complexity  int      `json:"time_complexity"`
 	Space_complexity int      `json:"space_complexity"`
 	States           []string `json:"states"`
 }
 
 func (data SolveData) ToJSON() (string, error) {
-
 	marshalled, err := json.Marshal(data)
-
 	return string(marshalled), err
 }
 
@@ -76,28 +75,21 @@ func getNeighborPuzzles(size int, p []int) map[int][]int {
 	return neighbors
 }
 
-func recursive_print(size int, mapmap map[string]string, currToString string) {
+func recursive_path(size int, mapmap map[string]string, currToString string) (path []string) {
 	if v, ok := mapmap[currToString]; ok == true {
-		recursive_print(size, mapmap, v)
-	}
-	strs := strings.Split(currToString, ",")
-	ary := make([]int, len(strs))
-	for i := range ary {
-		ary[i], _ = strconv.Atoi(strs[i])
-	}
-	printPuzzle(size, ary)
-	if size == 3 {
-		time.Sleep(30 * time.Millisecond)
-	} else if size == 4 {
-		time.Sleep(20 * time.Millisecond)
-	} else if size >= 5 {
-		time.Sleep(10 * time.Millisecond)
+		path = append([]string{currToString}, path...)
+		return append(recursive_path(size, mapmap, v), path...)
 	}
 	return
 }
 
-func printPuzzle(size int, puzzle []int) {
+func printPuzzle(size int, puzzleStr string) {
 	fmt.Printf("\n\n\n")
+	strs := strings.Split(puzzleStr, ",")
+	puzzle := make([]int, len(strs))
+	for i := range puzzle {
+		puzzle[i], _ = strconv.Atoi(strs[i])
+	}
 	for i := 0; i < len(puzzle); i++ {
 		if i != 0 && i%size == 0 {
 			fmt.Printf("\n")
@@ -105,11 +97,18 @@ func printPuzzle(size int, puzzle []int) {
 		fmt.Printf("%2d ", puzzle[i])
 	}
 	fmt.Printf("\n")
+	if size == 3 {
+		time.Sleep(30 * time.Millisecond)
+	} else if size == 4 {
+		time.Sleep(20 * time.Millisecond)
+	} else if size >= 5 {
+		time.Sleep(10 * time.Millisecond)
+	}
 }
 
 func Solve(size int, initPuzzle []int, heuristic string, search string, print bool) (SolveData, error) {
 	start := time.Now()
-	// timeComplexity := 1
+	timeComplexity := 1
 	spaceComplexity := 0
 
 	goal := MakeGoal(size)
@@ -120,33 +119,42 @@ func Solve(size int, initPuzzle []int, heuristic string, search string, print bo
 
 	openQueue := initPriorityQueue(size, heuristic, search, initPuzzle, goal)
 	closedMap := make(map[string]string)
-
 	for len(openQueue) != 0 {
 		current := heap.Pop(&openQueue).(*State)
 		currToString := PuzzleToString(current.puzzle)
 		closedMap[currToString] = current.prev_pos
 
-		queueLength := openQueue.Len()
-		if queueLength > spaceComplexity {
-			spaceComplexity = queueLength
+		openLength := openQueue.Len()
+		closedLength := len(closedMap)
+		if openLength > timeComplexity {
+			timeComplexity = openLength
+		}
+		if openLength+closedLength > spaceComplexity {
+			spaceComplexity = openLength + closedLength
 		}
 		for _, children := range getNeighborPuzzles(size, current.puzzle) {
 			childToString := PuzzleToString(children)
 			isGoal := AreArraysEqual(children, goal)
-
 			if isGoal {
 				time_ := time.Since(start)
+
+				path := recursive_path(size, closedMap, currToString)
+				path = append(path, childToString)
 				if print {
-					recursive_print(size, closedMap, currToString)
-					printPuzzle(size, children)
-					// fmt.Println("Time complexity is" + fmt.Sprintf("%d", len()))
+					for _, v := range path {
+						printPuzzle(size, v)
+					}
+					fmt.Println("\nTime complexity  : " + fmt.Sprintf("%d", timeComplexity))
+					fmt.Println("Space complexity : " + fmt.Sprintf("%d", spaceComplexity))
+					fmt.Println("Number of moves  : " + fmt.Sprintf("%d", current.move+1))
+					fmt.Println("Time to solve    : " + fmt.Sprintf("%s", time_) + "")
 				}
-				fmt.Println("Took " + fmt.Sprintf("%s", time_) + " seconds")
 				return SolveData{
-					Time: int64(time_),
-					// Time_complexity: ,
-					// Space_complexity: ,
-					// States: ,
+					Time:             int64(time_),
+					Time_complexity:  timeComplexity,
+					Space_complexity: spaceComplexity,
+					moves:            current.move + 1,
+					States:           path,
 				}, nil
 			} else if _, ok := closedMap[childToString]; ok == true {
 				continue // if child in closeMap, do nothing
