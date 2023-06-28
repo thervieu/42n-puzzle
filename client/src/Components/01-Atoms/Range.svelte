@@ -1,7 +1,8 @@
 <script lang="ts">
 	export let min: number = 3;
-	export let max: number = 17;
+	export let max: number = 5;
 	export let value: number = min;
+	export 
 
 	function handleChange(event: Event) {
 		if (event.target) {

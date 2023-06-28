@@ -10,7 +10,7 @@ import (
 type RequestSolveData struct {
 	Heuristic string `json:"heuristic"`
 	Search    string `json:"search"`
-	Puzzle    []int  `json:"state"`
+	Puzzle    []int  `json:"puzzle"`
 }
 
 func SanitizeHeuristic(heuristic string) (err error) {
@@ -21,7 +21,7 @@ func SanitizeHeuristic(heuristic string) (err error) {
 }
 
 func SanitizeSearch(search string) (err error) {
-	if search != "uniform" && search != "greedy" && search != "sum" {
+	if search != "uniform" && search != "greedy" && search != "both" {
 		return errors.New("Bad Request: search has a wrong value")
 	}
 	return nil
@@ -31,7 +31,7 @@ func VerifValuesSlice(arr []int, typeError bool) error {
 
 	begError := ""
 	if typeError == true {
-		begError = "Bad Request: State: "
+		begError = "Bad Request: puzzle: "
 	} else {
 		begError = "error: file: "
 	}

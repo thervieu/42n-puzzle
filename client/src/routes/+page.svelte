@@ -3,10 +3,14 @@
 	import Subtitle from '../Components/01-Atoms/Subtitle.svelte';
 	import Title from '../Components/01-Atoms/Title.svelte';
 	import Puzzle from '../Components/Puzzle.svelte';
-	let selected = '20';
-
-	function onChange(event) {
-		selected = event.currentTarget.value;
+	let search = "uniform";
+	let heuristic = "hamming";
+	let size = 3;
+	function onChangeSearch(event) {
+		search = event.currentTarget.value;
+	}
+	function onChangeHeuristic(event) {
+		heuristic = event.currentTarget.value;
 	}
 </script>
 
@@ -14,18 +18,23 @@
 	<Title value="N-Puzzle" />
 	<div class="section">
 		<Subtitle value="Size" />
-		<Range value={3} />
+		<Range bind:value={size} />
+		<p>{size} {size}</p>
 	</div>
 	<div class="section">
 		<Subtitle value="Search" />
 		<div>
 			<label>
-				<input checked={selected === 1} on:change={onChange} type="radio" name="amount" value="1" />
-				10
+				<input checked={search === "uniform"} on:change={onChangeSearch} type="radio" name="search" value={"uniform"} />
+				uniform cost
 			</label>
 			<label>
-				<input checked={selected === 2} on:change={onChange} type="radio" name="amount" value="2" />
-				10
+				<input checked={search === "greedy"} on:change={onChangeSearch} type="radio" name="search" value={"greedy"} />
+				greedy
+			</label>
+			<label>
+				<input checked={search === "both"} on:change={onChangeSearch} type="radio" name="search" value={"both"} />
+				both
 			</label>
 		</div>
 	</div>
@@ -33,21 +42,22 @@
 		<Subtitle value="Heuristic" />
 		<div>
 			<label>
-				<input checked={selected === 3} on:change={onChange} type="radio" name="amount" value="3" />
-				10
+				<input checked={heuristic === "hamming"} on:change={onChangeHeuristic} type="radio" name="heuristic" value={"hamming"}  />
+				hamming
 			</label>
 			<label>
-				<input checked={selected === 4} on:change={onChange} type="radio" name="amount" value="4" />
-				10
+				<input checked={heuristic === "manhattan"} on:change={onChangeHeuristic} type="radio" name="heuristic" value={"manhattan"} />
+				manhattan
 			</label>
 			<label>
-				<input checked={selected === 5} on:change={onChange} type="radio" name="amount" value="5" />
-				10
+				<input checked={heuristic === "euclidean"} on:change={onChangeHeuristic} type="radio" name="heuristic" value={"euclidean"} />
+				euclidean
 			</label>
 		</div>
 	</div>
-	<Puzzle />
-	<button>Solve</button>
+	{#key size}
+		<Puzzle boardSize={size} search={search} heuristic={heuristic}/>
+	{/key}
 </main>
 
 <style>

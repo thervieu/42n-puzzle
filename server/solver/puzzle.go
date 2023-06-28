@@ -142,5 +142,5 @@ func PuzzleToString(p []int) string {
 	for i, v := range p {
 		str[i] = strconv.Itoa(v)
 	}
-	return strings.Join(str, ",")
+	return strings.Join(str, " ")
 }

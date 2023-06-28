@@ -3,11 +3,12 @@
 	export let j: number;
 	export let cell: number;
 	export let moveCallback: (row: number, col: number) => void;
+	export let clickable: boolean;
 </script>
 
 <div
 	class="cell {cell === 0 ? 'empty' : ''}"
-	on:click={() => moveCallback(i, j)}
+	on:click={() => {clickable ? moveCallback(i, j) : 0}}
 	role="presentation"
 >
 	{cell === 0 ? '' : cell}
@@ -18,8 +19,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		width: 50px;
-		height: 50px;
+		width: 80px;
+		height: 80px;
 		font-size: 20px;
 		background-color: #e6e6e6;
 		border: 1px solid #ccc;

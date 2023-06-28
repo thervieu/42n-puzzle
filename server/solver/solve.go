@@ -11,11 +11,11 @@ import (
 )
 
 type SolveData struct {
-	Time             int64    `json:"time"`
-	moves            int      `json:"moves"`
-	Time_complexity  int      `json:"time_complexity"`
-	Space_complexity int      `json:"space_complexity"`
-	States           []string `json:"states"`
+	Time             string    `json:"time"`
+	Moves            int       `json:"moves"`
+	Time_complexity  int       `json:"time_complexity"`
+	Space_complexity int       `json:"space_complexity"`
+	States           [][][]int `json:"states"`
 }
 
 func (data SolveData) ToJSON() (string, error) {
@@ -31,6 +31,21 @@ func getHeuristic(size int, heuristic string, search string, puzzle []int, goal 
 	} else {
 		return EuclidianDistance(size, puzzle, goal)
 	}
+}
+
+func makeIntArr(size int, states []string) [][][]int {
+	pathArr := make([][][]int, len(states))
+	for i := range pathArr {
+		pathArr[i] = make([][]int, size)
+		strs := strings.Split(states[i], " ")
+		for j := 0; j < size; j++ {
+			pathArr[i][j] = make([]int, size)
+			for k := 0; k < size; k++ {
+				pathArr[i][j][k], _ = strconv.Atoi(strs[j*size+k])
+			}
+		}
+	}
+	return pathArr
 }
 
 func initPriorityQueue(size int, heuristic string, search string, puzzle []int, goal []int) PriorityQueue {
@@ -85,7 +100,7 @@ func recursive_path(size int, mapmap map[string]string, currToString string) (pa
 
 func printPuzzle(size int, puzzleStr string) {
 	fmt.Printf("\n\n\n")
-	strs := strings.Split(puzzleStr, ",")
+	strs := strings.Split(puzzleStr, " ")
 	puzzle := make([]int, len(strs))
 	for i := range puzzle {
 		puzzle[i], _ = strconv.Atoi(strs[i])
@@ -149,12 +164,13 @@ func Solve(size int, initPuzzle []int, heuristic string, search string, print bo
 					fmt.Println("Number of moves  : " + fmt.Sprintf("%d", current.move+1))
 					fmt.Println("Time to solve    : " + fmt.Sprintf("%s", time_) + "")
 				}
+				test := fmt.Sprint("%s", time_)
 				return SolveData{
-					Time:             int64(time_),
+					Time:             test,
 					Time_complexity:  timeComplexity,
 					Space_complexity: spaceComplexity,
-					moves:            current.move + 1,
-					States:           path,
+					Moves:            current.move + 1,
+					States:           makeIntArr(size, path),
 				}, nil
 			} else if _, ok := closedMap[childToString]; ok == true {
 				continue // if child in closeMap, do nothing
