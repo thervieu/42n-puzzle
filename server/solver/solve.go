@@ -40,7 +40,6 @@ func initPriorityQueue(size int, heuristic string, search string, puzzle []int, 
 		priority: getHeuristic(size, heuristic, search, puzzle, goal),
 		puzzle:   puzzle,
 		move:     0,
-		cost:     0,
 		prev_pos: "00000",
 	}
 	heap.Init(&pq)
@@ -152,10 +151,19 @@ func Solve(size int, initPuzzle []int, heuristic string, search string, print bo
 			} else if _, ok := closedMap[childToString]; ok == true {
 				continue // if child in closeMap, do nothing
 			} else {
+
+				var priority float32
+				if search == "greedy" {
+					priority = getHeuristic(size, heuristic, search, children, goal)
+				}
+				if search == "uniform" {
+					priority = float32(current.move)
+				} else {
+					priority = (float32(current.move) * 2) + getHeuristic(size, heuristic, search, children, goal)
+				}
 				newPuzzle := &State{
-					priority: getHeuristic(size, heuristic, search, children, goal),
+					priority: priority,
 					puzzle:   children,
-					cost:     0,
 					prev_pos: currToString,
 					move:     current.move + 1,
 				}

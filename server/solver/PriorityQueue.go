@@ -4,15 +4,6 @@ import (
 	"container/heap"
 )
 
-// QueueItem represents the data injected in the priority queue
-type QueueItem struct {
-	index    int
-	priority int
-	move     int
-	puzzle   []int
-	parent   *QueueItem
-}
-
 type State struct {
 	index    int
 	priority float32 // heuristic
@@ -55,7 +46,7 @@ func (pq *PriorityQueue) Pop() interface{} {
 	return item
 }
 
-func (pq *PriorityQueue) update(item *QueueItem, puzzle []int, priority int) {
+func (pq *PriorityQueue) update(item *State, puzzle []int, priority float32) {
 	item.puzzle = puzzle
 	item.priority = priority
 	heap.Fix(pq, item.index)

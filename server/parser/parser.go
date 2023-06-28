@@ -38,7 +38,8 @@ func ParseArgs(args []string) (size int, search string, heuristic string, fileNa
 			len(strings.Split(arg, "=")) == 2 {
 
 			if strings.Split(arg, "=")[1] != "uniform" &&
-				strings.Split(arg, "=")[1] != "greedy" {
+				strings.Split(arg, "=")[1] != "greedy" &&
+				strings.Split(arg, "=")[1] != "sum" {
 
 				return 0, "", "", "", errors.New("error: wrong argument for search '" + strings.Split(arg, "=")[1] + "'")
 			}
@@ -49,7 +50,7 @@ func ParseArgs(args []string) (size int, search string, heuristic string, fileNa
 
 			if strings.Split(arg, "=")[1] != "hamming" &&
 				strings.Split(arg, "=")[1] != "manhattan" &&
-				strings.Split(arg, "=")[1] != "linear_conflict" {
+				strings.Split(arg, "=")[1] != "euclidean" {
 
 				return 0, "", "", "", errors.New("error: wrong argument for heuristic '" + strings.Split(arg, "=")[1] + "'")
 			}
@@ -93,6 +94,7 @@ func ParseArgs(args []string) (size int, search string, heuristic string, fileNa
 	err = nil
 	return
 }
+
 func isStringNumerical(word string) bool {
 
 	for _, c := range word {

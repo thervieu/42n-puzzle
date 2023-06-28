@@ -14,14 +14,14 @@ type RequestSolveData struct {
 }
 
 func SanitizeHeuristic(heuristic string) (err error) {
-	if heuristic != "hamming" && heuristic != "manhattan" && heuristic != "linear" {
+	if heuristic != "hamming" && heuristic != "manhattan" && heuristic != "euclidean" {
 		return errors.New("Bad Request: heuristic has a wrong value")
 	}
 	return nil
 }
 
 func SanitizeSearch(search string) (err error) {
-	if search != "uniform" && search != "greedy" {
+	if search != "uniform" && search != "greedy" && search != "sum" {
 		return errors.New("Bad Request: search has a wrong value")
 	}
 	return nil
