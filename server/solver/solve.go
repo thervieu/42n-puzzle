@@ -141,7 +141,6 @@ func Solve(size int, initPuzzle []int, heuristic string, search string, print bo
 
 		openLength := openQueue.Len()
 		closedLength := len(closedMap)
-		timeComplexity += 1
 		if openLength+closedLength > spaceComplexity {
 			spaceComplexity = openLength + closedLength
 		}
@@ -183,6 +182,7 @@ func Solve(size int, initPuzzle []int, heuristic string, search string, print bo
 				} else {
 					priority = (float32(current.move) * 2) + getHeuristic(size, heuristic, search, children, goal)
 				}
+				timeComplexity += 1
 				newPuzzle := &State{
 					priority: priority,
 					puzzle:   children,
