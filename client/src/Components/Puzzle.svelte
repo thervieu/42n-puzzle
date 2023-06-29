@@ -4,42 +4,14 @@
 	import { writable } from 'svelte/store';
 	import { TARGET_BOARD_3, TARGET_BOARD_4, TARGET_BOARD_5 } from '../const';
 	import { averageMoves, averageSC, averageTC, averageTime } from '../Helpers/stats';
-	import { Bar } from 'svelte-chartjs';
-	import { browser } from '$app/environment';
+	import ApexCharts from "apexcharts"
+	import { BarChart } from 'chartist';
 
-
-	import {
-		Chart,
-		Title,
-		Tooltip,
-		Legend,
-		BarElement,
-		CategoryScale,
-		LinearScale,
-	} from 'chart.js';
-
-	Chart.register(
-		Title,
-		Tooltip,
-		Legend,
-		BarElement,
-		CategoryScale,
-		LinearScale
-	);
-	let dataChart = {
-		labels: [""],
-		datasets: [
-			{
-			label: '',
-			data: [""],
-			},
-		],
-	};
-	const labels: string[][] = [
-		["uniform and hamming", "uniform and manhattan", "uniform and euclidean",
-		"greedy and hamming", "greedy and manhattan", "greedy and euclidean",
-		"both and hamming", "both and manhattan", "both and euclidean"],
-		["uniform", "greedy", "both"],
+	const labels = [
+		["uniform hamming", "uniform manhattan", "uniform euclidean", 
+		"greedy hamming", "greedy manhattan", "greedy euclidean", 
+		"mix hamming", "mix manhattan", "mix euclidean"],
+		["uniform", "greedy", "mix"],
 		["hamming", "manhattan", "euclidian"]
 	];
 	const titles = ["Graph of avg time for 30 puzzles", "Graph of avg moves for 30 puzzles",
@@ -243,15 +215,15 @@
 		b_e = [];
 		let searches = ["uniform", "greedy", "both"];
 		let heuristics = ["hamming", "manhattan", "euclidean"];
-		for (let i in searches) {
-			for (let j in heuristics) {
-				for (let k = 0; k < 5; k++) {
-					let p1 = generateRandomBoard(3);
-					let p2 = generateRandomBoard(3);
-					let p3 = generateRandomBoard(3);
-					let p4 = generateRandomBoard(3);
-					let p5 = generateRandomBoard(3);
-					let p6 = generateRandomBoard(3);
+		for (let k = 0; k < 3; k++) {
+			let p1 = generateRandomBoard(3);
+			let p2 = generateRandomBoard(3);
+			let p3 = generateRandomBoard(3);
+			let p4 = generateRandomBoard(3);
+			let p5 = generateRandomBoard(3);
+			let p6 = generateRandomBoard(3);
+			for (let i in searches) {
+				for (let j in heuristics) {
 					const [r1, r2, r3, r4, r5, r6] = await Promise.all([solvePuzzle(p1, searches[i], heuristics[j]),
 						solvePuzzle(p2, searches[i], heuristics[j]),
 						solvePuzzle(p3, searches[i], heuristics[j]),
@@ -292,7 +264,6 @@
 						b_e.push(r1); b_e.push(r2); b_e.push(r3); b_e.push(r4); b_e.push(r5); b_e.push(r6);
 					}
 				}
-				console.log(i, j)
 			}
 		}
 		let u = u_h.concat(u_m).concat(u_e);
@@ -329,72 +300,42 @@
 				[averageSC(h), averageSC(m), averageSC(e)],
 			],
 		];
-		dataChart = {
-			labels: labels[graph],
-			datasets: [
-				{
-					label: titles[graphed],
-					data: data[graph][graphed]
-				},
-			],
-		};
 		console.log(data);
-		console.log(dataChart);
 	};
 	let clickable=true;
 	let not_clickable=false;
 	let graph = 0;
 	let graphed = 0;
 
-	const changeGraph = (event: any) => {
+	async function changeGraph(event: any) {
 		graph = event.currentTarget.value;
-		dataChart = {
+		chart = new BarChart(
+		'#bar-chart',
+		{
 			labels: labels[graph],
-			datasets: [
-				{
-					label: titles[graphed],
-					data: data[graph][graphed]
-				},
-			],
-		};
-		console.log(dataChart)
+			series: data[graph][graphed]
+		},
+		{
+			seriesBarDistance: 30,
+			distributeSeries: true
+		}
+		);
 	};
-	const changeGraphed = (event: any) => {
+	async function changeGraphed(event: any) {
 		graphed = event.currentTarget.value;
-		dataChart = {
+		chart = new BarChart(
+		'#bar-chart',
+		{
 			labels: labels[graph],
-			datasets: [
-				{
-					label: titles[graphed],
-					data: data[graph][graphed]
-				},
-			],
-		};
-		console.log(dataChart)
+			series: data[graph][graphed]
+		},
+		{
+			seriesBarDistance: 30,
+			distributeSeries: true
+		}
+		);
 	};
-	// Bar chart
-	// var chart;
-	// if (browser) {
-	// 	chart = new Chart(document.getElementById("bar-chart"), {
-	// 		type: 'bar',
-	// 		data: {
-	// 		labels: labels[graph],
-	// 		datasets: [
-	// 				{
-	// 					label: titles[graphed],
-	// 					data: data[graph][graphed],
-	// 				}
-	// 			]
-	// 		},
-	// 		options: {
-	// 		legend: { display: false },
-	// 		title: {
-	// 			display: true,
-	// 			text: 'Predicted world population (millions) in 2050'
-	// 		}
-	// 		}
-	// 	});
-	// }
+	var chart: any;
 </script>
 
 <div>
@@ -460,9 +401,60 @@
 					space complexity
 				</label>
 			</div>
-			{#key dataChart}
-				<canvas id="bar-chart" width="400" height="250"></canvas>
-			{/key}
+			<div id="bar-container">
+				<div id="bar-chart"></div>
+			</div>
 		{/if}
 	</div>
 </div>
+
+<style lang="scss">
+#bar-chart{
+    background-color: rgb(55, 71, 79);
+    width: 1000px;
+    height: 500px;
+    font-family: Lato, Helvetica-Neue, monospace;
+}
+
+:global(.ct-series-a .ct-bar) {
+  stroke: green;
+  stroke-width: 20px;
+}
+:global(.ct-series-b .ct-bar) {
+  stroke: rgb(0, 2, 128);
+  stroke-width: 20px;
+}
+:global(.ct-series-c .ct-bar) {
+  stroke: rgb(196, 216, 21);
+  stroke-width: 20px;
+}
+:global(.ct-series-d .ct-bar) {
+  stroke: rgb(128, 0, 75);
+  stroke-width: 20px;
+}
+:global(.ct-series-e .ct-bar) {
+  stroke: rgb(128, 58, 0);
+  stroke-width: 20px;
+}
+:global(.ct-series-f .ct-bar) {
+  stroke: rgb(89, 10, 92);
+  stroke-width: 20px;
+}
+:global(.ct-series-g .ct-bar) {
+  stroke: rgb(29, 184, 204);
+  stroke-width: 20px;
+}
+:global(.ct-series-h .ct-bar) {
+  stroke: rgb(81, 172, 39);
+  stroke-width: 20px;
+}
+:global(.ct-series-i .ct-bar) {
+  stroke: rgb(165, 3, 3);
+  stroke-width: 20px;
+}
+
+
+:global(.ct-label) {
+  color: white;
+}
+</style>
