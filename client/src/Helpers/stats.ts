@@ -11,6 +11,7 @@ export const averageTime = (arr: any) => {
             sum += Number(arr[i].time.substring(0, arr[i].time.length-1) * 1000)
         }
     }
+    console.log("averageTime", sum, arr.length, sum / arr.length)
     return sum / arr.length
 };
 
@@ -20,6 +21,7 @@ export const averageMoves = (arr: any) => {
         console.log(i, arr[i].moves)
         sum += arr[i].moves
     }
+    console.log("averageMoves", sum, arr.length, sum / arr.length)
     return sum / arr.length
 };
 
@@ -29,6 +31,7 @@ export const averageTC = (arr: any) => {
         console.log(i, arr[i].time_complexity)
         sum += arr[i].time_complexity
     }
+    console.log("averageTC", sum, arr.length, sum / arr.length)
     return sum / arr.length
 };
 
@@ -38,5 +41,6 @@ export const averageSC = (arr: any) => {
         console.log(i, arr[i].space_complexity)
         sum += arr[i].space_complexity
     }
+    console.log("averageSC", sum, arr.length, sum / arr.length)
     return sum / arr.length
 };

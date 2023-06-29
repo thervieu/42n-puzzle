@@ -5,6 +5,8 @@
 	import { TARGET_BOARD_3, TARGET_BOARD_4, TARGET_BOARD_5 } from '../const';
 	import { averageMoves, averageSC, averageTC, averageTime } from '../Helpers/stats';
 	import { Bar } from 'svelte-chartjs';
+	import { browser } from '$app/environment';
+
 
 	import {
 		Chart,
@@ -265,7 +267,7 @@
 					if (searches[i] === "uniform" && heuristics[j] === "hamming") {
 						u_h.push(r1); u_h.push(r2); u_h.push(r3); u_h.push(r4); u_h.push(r5); u_h.push(r6);
 					}
-					if (searches[i] === "uniform" && heuristics[j] === "manhattant") {
+					if (searches[i] === "uniform" && heuristics[j] === "manhattan") {
 						u_m.push(r1); u_m.push(r2); u_m.push(r3); u_m.push(r4); u_m.push(r5); u_m.push(r6);
 					}
 					if (searches[i] === "uniform" && heuristics[j] === "euclidean") {
@@ -274,7 +276,7 @@
 					if (searches[i] === "greedy" && heuristics[j] === "hamming") {
 						g_h.push(r1); g_h.push(r2); g_h.push(r3); g_h.push(r4); g_h.push(r5); g_h.push(r6);
 					}
-					if (searches[i] === "greedy" && heuristics[j] === "manhattant") {
+					if (searches[i] === "greedy" && heuristics[j] === "manhattan") {
 						g_m.push(r1); g_m.push(r2); g_m.push(r3); g_m.push(r4); g_m.push(r5); g_m.push(r6);
 					}
 					if (searches[i] === "greedy" && heuristics[j] === "euclidean") {
@@ -283,7 +285,7 @@
 					if (searches[i] === "both" && heuristics[j] === "hamming") {
 						b_h.push(r1); b_h.push(r2); b_h.push(r3); b_h.push(r4); b_h.push(r5); b_h.push(r6);
 					}
-					if (searches[i] === "both" && heuristics[j] === "manhattant") {
+					if (searches[i] === "both" && heuristics[j] === "manhattan") {
 						b_m.push(r1); b_m.push(r2); b_m.push(r3); b_m.push(r4); b_m.push(r5); b_m.push(r6);
 					}
 					if (searches[i] === "both" && heuristics[j] === "euclidean") {
@@ -344,20 +346,7 @@
 	let graph = 0;
 	let graphed = 0;
 
-	// let dataChart = {
-	// 	labels: [],
-	// 	datasets: [
-	// 		{
-	// 		label: '',
-	// 		data: [],
-	// 		backgroundColor: [],
-	// 		borderWidth: 2,
-	// 		borderColor: [],
-	// 		},
-	// 	],
-	// };
-
-	const changeGraph = (event) => {
+	const changeGraph = (event: any) => {
 		graph = event.currentTarget.value;
 		dataChart = {
 			labels: labels[graph],
@@ -370,7 +359,7 @@
 		};
 		console.log(dataChart)
 	};
-	const changeGraphed = (event) => {
+	const changeGraphed = (event: any) => {
 		graphed = event.currentTarget.value;
 		dataChart = {
 			labels: labels[graph],
@@ -383,6 +372,29 @@
 		};
 		console.log(dataChart)
 	};
+	// Bar chart
+	// var chart;
+	// if (browser) {
+	// 	chart = new Chart(document.getElementById("bar-chart"), {
+	// 		type: 'bar',
+	// 		data: {
+	// 		labels: labels[graph],
+	// 		datasets: [
+	// 				{
+	// 					label: titles[graphed],
+	// 					data: data[graph][graphed],
+	// 				}
+	// 			]
+	// 		},
+	// 		options: {
+	// 		legend: { display: false },
+	// 		title: {
+	// 			display: true,
+	// 			text: 'Predicted world population (millions) in 2050'
+	// 		}
+	// 		}
+	// 	});
+	// }
 </script>
 
 <div>
@@ -449,8 +461,7 @@
 				</label>
 			</div>
 			{#key dataChart}
-				<p>{dataChart}</p>
-				<Bar {dataChart} />
+				<canvas id="bar-chart" width="400" height="250"></canvas>
 			{/key}
 		{/if}
 	</div>
