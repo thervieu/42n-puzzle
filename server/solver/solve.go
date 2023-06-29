@@ -123,7 +123,7 @@ func printPuzzle(size int, puzzleStr string) {
 
 func Solve(size int, initPuzzle []int, heuristic string, search string, print bool) (SolveData, error) {
 	start := time.Now()
-	timeComplexity := 1
+	timeComplexity := 0
 	spaceComplexity := 0
 
 	goal := MakeGoal(size)
@@ -141,9 +141,7 @@ func Solve(size int, initPuzzle []int, heuristic string, search string, print bo
 
 		openLength := openQueue.Len()
 		closedLength := len(closedMap)
-		if openLength > timeComplexity {
-			timeComplexity = openLength
-		}
+		timeComplexity += 1
 		if openLength+closedLength > spaceComplexity {
 			spaceComplexity = openLength + closedLength
 		}

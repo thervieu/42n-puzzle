@@ -45,11 +45,19 @@
 		
 	};
 	let solution: number[][][] = [];
+	let time: string;
+	let moves: number;
+	let time_complexity: number;
+	let space_complexity: number;
 	async function handleClick() {
 		// Now set it to the real fetch promise 
 		const result = await solvePuzzle(board);
 		solution = result.states;
-		solution_pres = solution[0]
+		solution_pres = solution[0];
+		time = result.time.substring(12, result.time.length);
+		moves = result.moves;
+		time_complexity = result.time_complexity;
+		space_complexity = result.space_complexity;
 	};
 	const handleFullLeftClick = () => {
 		solution_pres = solution[0];
@@ -193,6 +201,8 @@
 	<button on:click={handleClick} >Solve</button>
 
 	{#if solution_pres.length !== 0}
+		
+		<p>Move {solution.indexOf(solution_pres)}</p>
 		{#key solution_pres}
 			<Board board={solution_pres} {moveCallback} clickable={not_clickable} />
 		{/key}
@@ -201,5 +211,11 @@
 		<button on:click={handlePlayClick} >Play</button>
 		<button on:click={handleRightClick} >Right</button>
 		<button on:click={handleFullRightClick} >FullRight</button>
+		<div>
+			<p>Took {time}</p>
+			<p>Solved in {moves} moves</p>
+			<p>Time complexity {time_complexity}</p>
+			<p>Space complexity {space_complexity}</p>
+		</div>
 	{/if}
 	</div>
