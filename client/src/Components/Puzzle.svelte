@@ -4,18 +4,30 @@
 	import { writable } from 'svelte/store';
 	import { TARGET_BOARD_3, TARGET_BOARD_4, TARGET_BOARD_5 } from '../const';
 	import { averageMoves, averageSC, averageTC, averageTime } from '../Helpers/stats';
-	import ApexCharts from "apexcharts"
+	// import ApexCharts from "apexcharts"
 	import { BarChart } from 'chartist';
 
 	const labels = [
-		["uniform hamming", "uniform manhattan", "uniform euclidean", 
-		"greedy hamming", "greedy manhattan", "greedy euclidean", 
-		"mix hamming", "mix manhattan", "mix euclidean"],
-		["uniform", "greedy", "mix"],
-		["hamming", "manhattan", "euclidian"]
+		[
+			'uniform hamming',
+			'uniform manhattan',
+			'uniform euclidean',
+			'greedy hamming',
+			'greedy manhattan',
+			'greedy euclidean',
+			'mix hamming',
+			'mix manhattan',
+			'mix euclidean'
+		],
+		['uniform', 'greedy', 'mix'],
+		['hamming', 'manhattan', 'euclidian']
 	];
-	const titles = ["Graph of avg time for 30 puzzles", "Graph of avg moves for 30 puzzles",
-		"Graph of avg time complexity for 30 puzzles", "Graph of avg space complexity for 30 puzzles"];
+	const titles = [
+		'Graph of avg time for 30 puzzles',
+		'Graph of avg moves for 30 puzzles',
+		'Graph of avg time complexity for 30 puzzles',
+		'Graph of avg space complexity for 30 puzzles'
+	];
 
 	export let boardSize: number;
 	export let search: string;
@@ -24,45 +36,44 @@
 	let solution_pres: number[][] = [];
 	var TARGET_BOARD: number[][];
 	if (boardSize === 3) {
-		TARGET_BOARD = TARGET_BOARD_3
+		TARGET_BOARD = TARGET_BOARD_3;
 	} else if (boardSize === 4) {
-		TARGET_BOARD = TARGET_BOARD_4
+		TARGET_BOARD = TARGET_BOARD_4;
 	} else {
-		TARGET_BOARD = TARGET_BOARD_5
-	};
+		TARGET_BOARD = TARGET_BOARD_5;
+	}
 
 	async function solvePuzzle(puzzle: number[][], search_: string, heuristic_: string) {
-		var puzzleArr: number[] = []
+		var puzzleArr: number[] = [];
 		for (let i = 0; i < puzzle.length; i++) {
 			for (let j = 0; j < puzzle[i].length; j++) {
 				puzzleArr.push(puzzle[i][j]);
 			}
 		}
-		const response = await fetch("http://localhost:3020/solve",{
-			method:  'POST',
+		const response = await fetch('http://localhost:3020/solve', {
+			method: 'POST',
 			headers: {
-			'Content-Type': 'application/json'
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-			puzzle: puzzleArr,
-			search: search_,
-			heuristic: heuristic_
+				puzzle: puzzleArr,
+				search: search_,
+				heuristic: heuristic_
 			})
-		})
+		});
 		if (response.ok) {
-  		return await response.json();
-			
+			return await response.json();
 		} else {
-			throw new Error("help");
+			throw new Error('help');
 		}
-	};
+	}
 	let solution: number[][][] = [];
 	let time: string;
 	let moves: number;
 	let time_complexity: number;
 	let space_complexity: number;
 	async function handleClick() {
-		// Now set it to the real fetch promise 
+		// Now set it to the real fetch promise
 		const result = await solvePuzzle(board, search, heuristic);
 		solution = result.states;
 		solution_pres = solution[0];
@@ -70,7 +81,7 @@
 		moves = result.moves;
 		time_complexity = result.time_complexity;
 		space_complexity = result.space_complexity;
-	};
+	}
 	const handleFullLeftClick = () => {
 		solution_pres = solution[0];
 	};
@@ -97,7 +108,7 @@
 		}
 	};
 	const handleFullRightClick = () => {
-		solution_pres = solution[solution.length - 1]
+		solution_pres = solution[solution.length - 1];
 	};
 
 	const findPos = (boardSize: number, value: number, puzzle: number[][]) => {
@@ -113,30 +124,31 @@
 
 	const generateRandomBoard = (boardSize: number) => {
 		let tmp: number[][];
-		tmp = TARGET_BOARD
+		tmp = TARGET_BOARD;
 		for (let i = 0; i < 100 + Math.floor(Math.random() * 100); i++) {
-			var idx = findPos(boardSize, 0, tmp)
-			var arr = []
-			if (idx%boardSize > 0 ){
-				arr.push(idx-1)
+			var idx = findPos(boardSize, 0, tmp);
+			var arr = [];
+			if (idx % boardSize > 0) {
+				arr.push(idx - 1);
 			}
-			if (idx%boardSize < boardSize-1) {
-				arr.push(idx+1)
+			if (idx % boardSize < boardSize - 1) {
+				arr.push(idx + 1);
 			}
-			if (Math.floor(idx/boardSize) > 0 && idx > boardSize) {
-				arr.push(idx-boardSize)
+			if (Math.floor(idx / boardSize) > 0 && idx > boardSize) {
+				arr.push(idx - boardSize);
 			}
-			if (Math.floor(idx/boardSize) < boardSize-1) {
-				arr.push(idx+boardSize)
+			if (Math.floor(idx / boardSize) < boardSize - 1) {
+				arr.push(idx + boardSize);
 			}
-			var swapIndex = arr[Math.floor(Math.random() * arr.length)]
-			tmp[Math.floor(idx/boardSize)][idx%boardSize] = tmp[Math.floor(swapIndex/boardSize)][swapIndex%boardSize]
-			tmp[Math.floor(swapIndex/boardSize)][swapIndex%boardSize] = 0
+			var swapIndex = arr[Math.floor(Math.random() * arr.length)];
+			tmp[Math.floor(idx / boardSize)][idx % boardSize] =
+				tmp[Math.floor(swapIndex / boardSize)][swapIndex % boardSize];
+			tmp[Math.floor(swapIndex / boardSize)][swapIndex % boardSize] = 0;
 		}
-		return tmp
+		return tmp;
 	};
 
-	let board: number[][] = generateRandomBoard(boardSize)
+	let board: number[][] = generateRandomBoard(boardSize);
 
 	let emptyRow: number;
 	let emptyCol: number;
@@ -145,7 +157,7 @@
 	const dispatch = createEventDispatcher();
 
 	const moveCallback = (row: number, col: number) => {
-		solution = []
+		solution = [];
 		// Vérifier si le mouvement est valide
 		if (isValidMove(row, col)) {
 			// Déplacer la case
@@ -213,8 +225,8 @@
 		b_h = [];
 		b_m = [];
 		b_e = [];
-		let searches = ["uniform", "greedy", "both"];
-		let heuristics = ["hamming", "manhattan", "euclidean"];
+		let searches = ['uniform', 'greedy', 'both'];
+		let heuristics = ['hamming', 'manhattan', 'euclidean'];
 		for (let k = 0; k < 3; k++) {
 			let p1 = generateRandomBoard(3);
 			let p2 = generateRandomBoard(3);
@@ -224,44 +236,91 @@
 			let p6 = generateRandomBoard(3);
 			for (let i in searches) {
 				for (let j in heuristics) {
-					const [r1, r2, r3, r4, r5, r6] = await Promise.all([solvePuzzle(p1, searches[i], heuristics[j]),
+					const [r1, r2, r3, r4, r5, r6] = await Promise.all([
+						solvePuzzle(p1, searches[i], heuristics[j]),
 						solvePuzzle(p2, searches[i], heuristics[j]),
 						solvePuzzle(p3, searches[i], heuristics[j]),
 						solvePuzzle(p4, searches[i], heuristics[j]),
 						solvePuzzle(p5, searches[i], heuristics[j]),
-						solvePuzzle(p6, searches[i], heuristics[j])]);
+						solvePuzzle(p6, searches[i], heuristics[j])
+					]);
 					r1.time = r1.time.substring(12, r1.time.length);
 					r2.time = r2.time.substring(12, r2.time.length);
 					r3.time = r3.time.substring(12, r3.time.length);
 					r4.time = r4.time.substring(12, r4.time.length);
 					r5.time = r5.time.substring(12, r5.time.length);
 					r6.time = r6.time.substring(12, r6.time.length);
-					if (searches[i] === "uniform" && heuristics[j] === "hamming") {
-						u_h.push(r1); u_h.push(r2); u_h.push(r3); u_h.push(r4); u_h.push(r5); u_h.push(r6);
+					if (searches[i] === 'uniform' && heuristics[j] === 'hamming') {
+						u_h.push(r1);
+						u_h.push(r2);
+						u_h.push(r3);
+						u_h.push(r4);
+						u_h.push(r5);
+						u_h.push(r6);
 					}
-					if (searches[i] === "uniform" && heuristics[j] === "manhattan") {
-						u_m.push(r1); u_m.push(r2); u_m.push(r3); u_m.push(r4); u_m.push(r5); u_m.push(r6);
+					if (searches[i] === 'uniform' && heuristics[j] === 'manhattan') {
+						u_m.push(r1);
+						u_m.push(r2);
+						u_m.push(r3);
+						u_m.push(r4);
+						u_m.push(r5);
+						u_m.push(r6);
 					}
-					if (searches[i] === "uniform" && heuristics[j] === "euclidean") {
-						u_e.push(r1); u_e.push(r2); u_e.push(r3); u_e.push(r4); u_e.push(r5); u_e.push(r6);
+					if (searches[i] === 'uniform' && heuristics[j] === 'euclidean') {
+						u_e.push(r1);
+						u_e.push(r2);
+						u_e.push(r3);
+						u_e.push(r4);
+						u_e.push(r5);
+						u_e.push(r6);
 					}
-					if (searches[i] === "greedy" && heuristics[j] === "hamming") {
-						g_h.push(r1); g_h.push(r2); g_h.push(r3); g_h.push(r4); g_h.push(r5); g_h.push(r6);
+					if (searches[i] === 'greedy' && heuristics[j] === 'hamming') {
+						g_h.push(r1);
+						g_h.push(r2);
+						g_h.push(r3);
+						g_h.push(r4);
+						g_h.push(r5);
+						g_h.push(r6);
 					}
-					if (searches[i] === "greedy" && heuristics[j] === "manhattan") {
-						g_m.push(r1); g_m.push(r2); g_m.push(r3); g_m.push(r4); g_m.push(r5); g_m.push(r6);
+					if (searches[i] === 'greedy' && heuristics[j] === 'manhattan') {
+						g_m.push(r1);
+						g_m.push(r2);
+						g_m.push(r3);
+						g_m.push(r4);
+						g_m.push(r5);
+						g_m.push(r6);
 					}
-					if (searches[i] === "greedy" && heuristics[j] === "euclidean") {
-						g_e.push(r1); g_e.push(r2); g_e.push(r3); g_e.push(r4); g_e.push(r5); g_e.push(r6);
+					if (searches[i] === 'greedy' && heuristics[j] === 'euclidean') {
+						g_e.push(r1);
+						g_e.push(r2);
+						g_e.push(r3);
+						g_e.push(r4);
+						g_e.push(r5);
+						g_e.push(r6);
 					}
-					if (searches[i] === "both" && heuristics[j] === "hamming") {
-						b_h.push(r1); b_h.push(r2); b_h.push(r3); b_h.push(r4); b_h.push(r5); b_h.push(r6);
+					if (searches[i] === 'both' && heuristics[j] === 'hamming') {
+						b_h.push(r1);
+						b_h.push(r2);
+						b_h.push(r3);
+						b_h.push(r4);
+						b_h.push(r5);
+						b_h.push(r6);
 					}
-					if (searches[i] === "both" && heuristics[j] === "manhattan") {
-						b_m.push(r1); b_m.push(r2); b_m.push(r3); b_m.push(r4); b_m.push(r5); b_m.push(r6);
+					if (searches[i] === 'both' && heuristics[j] === 'manhattan') {
+						b_m.push(r1);
+						b_m.push(r2);
+						b_m.push(r3);
+						b_m.push(r4);
+						b_m.push(r5);
+						b_m.push(r6);
 					}
-					if (searches[i] === "both" && heuristics[j] === "euclidean") {
-						b_e.push(r1); b_e.push(r2); b_e.push(r3); b_e.push(r4); b_e.push(r5); b_e.push(r6);
+					if (searches[i] === 'both' && heuristics[j] === 'euclidean') {
+						b_e.push(r1);
+						b_e.push(r2);
+						b_e.push(r3);
+						b_e.push(r4);
+						b_e.push(r5);
+						b_e.push(r6);
 					}
 				}
 			}
@@ -274,67 +333,99 @@
 		let e = b_e.concat(u_e).concat(g_e);
 		data = [
 			[
-				[averageTime(u_h), averageTime(u_m), averageTime(u_e),
-				averageTime(g_h), averageTime(g_m), averageTime(g_e),
-				averageTime(b_h), averageTime(b_m), averageTime(b_e)],
-				[averageMoves(u_h), averageMoves(u_m), averageMoves(u_e),
-				averageMoves(g_h), averageMoves(g_m), averageMoves(g_e),
-				averageMoves(b_h), averageMoves(b_m), averageMoves(b_e)],
-				[averageTC(u_h), averageTC(u_m), averageTC(u_e),
-				averageTC(g_h), averageTC(g_m), averageTC(g_e),
-				averageTC(b_h), averageTC(b_m), averageTC(b_e)],
-				[averageSC(u_h), averageSC(u_m), averageSC(u_e),
-				averageSC(g_h), averageSC(g_m), averageSC(g_e),
-				averageSC(b_h), averageSC(b_m), averageSC(b_e)]
+				[
+					averageTime(u_h),
+					averageTime(u_m),
+					averageTime(u_e),
+					averageTime(g_h),
+					averageTime(g_m),
+					averageTime(g_e),
+					averageTime(b_h),
+					averageTime(b_m),
+					averageTime(b_e)
+				],
+				[
+					averageMoves(u_h),
+					averageMoves(u_m),
+					averageMoves(u_e),
+					averageMoves(g_h),
+					averageMoves(g_m),
+					averageMoves(g_e),
+					averageMoves(b_h),
+					averageMoves(b_m),
+					averageMoves(b_e)
+				],
+				[
+					averageTC(u_h),
+					averageTC(u_m),
+					averageTC(u_e),
+					averageTC(g_h),
+					averageTC(g_m),
+					averageTC(g_e),
+					averageTC(b_h),
+					averageTC(b_m),
+					averageTC(b_e)
+				],
+				[
+					averageSC(u_h),
+					averageSC(u_m),
+					averageSC(u_e),
+					averageSC(g_h),
+					averageSC(g_m),
+					averageSC(g_e),
+					averageSC(b_h),
+					averageSC(b_m),
+					averageSC(b_e)
+				]
 			],
 			[
 				[averageTime(u), averageTime(g), averageTime(b)],
 				[averageMoves(u), averageMoves(g), averageMoves(b)],
 				[averageTC(u), averageTC(g), averageTC(b)],
-				[averageSC(u), averageSC(g), averageSC(b)],
+				[averageSC(u), averageSC(g), averageSC(b)]
 			],
 			[
 				[averageTime(h), averageTime(m), averageTime(e)],
 				[averageMoves(h), averageMoves(m), averageMoves(e)],
 				[averageTC(h), averageTC(m), averageTC(e)],
-				[averageSC(h), averageSC(m), averageSC(e)],
-			],
+				[averageSC(h), averageSC(m), averageSC(e)]
+			]
 		];
 		console.log(data);
-	};
-	let clickable=true;
-	let not_clickable=false;
+	}
+	let clickable = true;
+	let not_clickable = false;
 	let graph = 0;
 	let graphed = 0;
 
 	async function changeGraph(event: any) {
 		graph = event.currentTarget.value;
 		chart = new BarChart(
-		'#bar-chart',
-		{
-			labels: labels[graph],
-			series: data[graph][graphed]
-		},
-		{
-			seriesBarDistance: 30,
-			distributeSeries: true
-		}
+			'#bar-chart',
+			{
+				labels: labels[graph],
+				series: data[graph][graphed]
+			},
+			{
+				seriesBarDistance: 30,
+				distributeSeries: true
+			}
 		);
-	};
+	}
 	async function changeGraphed(event: any) {
 		graphed = event.currentTarget.value;
 		chart = new BarChart(
-		'#bar-chart',
-		{
-			labels: labels[graph],
-			series: data[graph][graphed]
-		},
-		{
-			seriesBarDistance: 30,
-			distributeSeries: true
-		}
+			'#bar-chart',
+			{
+				labels: labels[graph],
+				series: data[graph][graphed]
+			},
+			{
+				seriesBarDistance: 30,
+				distributeSeries: true
+			}
 		);
-	};
+	}
 	var chart: any;
 </script>
 
@@ -345,18 +436,18 @@
 		<p>Nombre de coups : {moveCount}</p>
 	{/if}
 	<Board {board} {moveCallback} {clickable} />
-	<button on:click={handleClick} >Solve</button>
+	<button on:click={handleClick}>Solve</button>
 
 	{#if solution.length !== 0}
 		<p>Move {solution.indexOf(solution_pres)}</p>
 		{#key solution_pres}
 			<Board board={solution_pres} {moveCallback} clickable={not_clickable} />
 		{/key}
-		<button on:click={handleFullLeftClick} >FullLeft</button>
-		<button on:click={handleLeftClick} >Left</button>
-		<button on:click={handlePlayClick} >Play</button>
-		<button on:click={handleRightClick} >Right</button>
-		<button on:click={handleFullRightClick} >FullRight</button>
+		<button on:click={handleFullLeftClick}>FullLeft</button>
+		<button on:click={handleLeftClick}>Left</button>
+		<button on:click={handlePlayClick}>Play</button>
+		<button on:click={handleRightClick}>Right</button>
+		<button on:click={handleFullRightClick}>FullRight</button>
 		<div>
 			<p>Took {time}</p>
 			<p>Solved in {moves} moves</p>
@@ -365,96 +456,137 @@
 		</div>
 	{/if}
 	<div>
-		<button on:click={DoBenchmark} >Benchmark</button>
+		<button on:click={DoBenchmark}>Benchmark</button>
 		{#if data.length !== 0}
 			<div>
 				<p>Graph by:</p>
 				<label>
-					<input checked={graph === 0} on:change={changeGraph} type="radio" name="graph" value={0}  />
+					<input
+						checked={graph === 0}
+						on:change={changeGraph}
+						type="radio"
+						name="graph"
+						value={0}
+					/>
 					all
 				</label>
 				<label>
-					<input checked={graph === 1} on:change={changeGraph} type="radio" name="graph" value={1} />
+					<input
+						checked={graph === 1}
+						on:change={changeGraph}
+						type="radio"
+						name="graph"
+						value={1}
+					/>
 					search
 				</label>
 				<label>
-					<input checked={graph === 2} on:change={changeGraph} type="radio" name="graph" value={2} />
+					<input
+						checked={graph === 2}
+						on:change={changeGraph}
+						type="radio"
+						name="graph"
+						value={2}
+					/>
 					heuristic
 				</label>
 			</div>
 			<div>
 				<p>Graph Of:</p>
 				<label>
-					<input checked={graphed === 0} on:change={changeGraphed} type="radio" name="graphed" value={0}  />
+					<input
+						checked={graphed === 0}
+						on:change={changeGraphed}
+						type="radio"
+						name="graphed"
+						value={0}
+					/>
 					time
 				</label>
 				<label>
-					<input checked={graphed === 1} on:change={changeGraphed} type="radio" name="graphed" value={1} />
+					<input
+						checked={graphed === 1}
+						on:change={changeGraphed}
+						type="radio"
+						name="graphed"
+						value={1}
+					/>
 					moves
 				</label>
 				<label>
-					<input checked={graphed === 2} on:change={changeGraphed} type="radio" name="graphed" value={2} />
+					<input
+						checked={graphed === 2}
+						on:change={changeGraphed}
+						type="radio"
+						name="graphed"
+						value={2}
+					/>
 					time complexity
 				</label>
 				<label>
-					<input checked={graphed === 3} on:change={changeGraphed} type="radio" name="graphed" value={3} />
+					<input
+						checked={graphed === 3}
+						on:change={changeGraphed}
+						type="radio"
+						name="graphed"
+						value={3}
+					/>
 					space complexity
 				</label>
 			</div>
 			<div id="bar-container">
-				<div id="bar-chart"></div>
+				<div id="bar-chart" />
 			</div>
 		{/if}
 	</div>
 </div>
 
 <style lang="scss">
-#bar-chart{
-    background-color: rgb(55, 71, 79);
-    width: 1000px;
-    height: 500px;
-    font-family: Lato, Helvetica-Neue, monospace;
-}
+	#bar-chart {
+		background-color: rgb(55, 71, 79);
+		width: 1000px;
+		height: 500px;
+		font-family: Lato, Helvetica-Neue, monospace;
+	}
 
-:global(.ct-series-a .ct-bar) {
-  stroke: green;
-  stroke-width: 20px;
-}
-:global(.ct-series-b .ct-bar) {
-  stroke: rgb(0, 2, 128);
-  stroke-width: 20px;
-}
-:global(.ct-series-c .ct-bar) {
-  stroke: rgb(196, 216, 21);
-  stroke-width: 20px;
-}
-:global(.ct-series-d .ct-bar) {
-  stroke: rgb(128, 0, 75);
-  stroke-width: 20px;
-}
-:global(.ct-series-e .ct-bar) {
-  stroke: rgb(128, 58, 0);
-  stroke-width: 20px;
-}
-:global(.ct-series-f .ct-bar) {
-  stroke: rgb(89, 10, 92);
-  stroke-width: 20px;
-}
-:global(.ct-series-g .ct-bar) {
-  stroke: rgb(29, 184, 204);
-  stroke-width: 20px;
-}
-:global(.ct-series-h .ct-bar) {
-  stroke: rgb(81, 172, 39);
-  stroke-width: 20px;
-}
-:global(.ct-series-i .ct-bar) {
-  stroke: rgb(165, 3, 3);
-  stroke-width: 20px;
-}
+	:global(.ct-series-a .ct-bar) {
+		stroke: green;
+		stroke-width: 20px;
+	}
+	:global(.ct-series-b .ct-bar) {
+		stroke: rgb(0, 2, 128);
+		stroke-width: 20px;
+	}
+	:global(.ct-series-c .ct-bar) {
+		stroke: rgb(196, 216, 21);
+		stroke-width: 20px;
+	}
+	:global(.ct-series-d .ct-bar) {
+		stroke: rgb(128, 0, 75);
+		stroke-width: 20px;
+	}
+	:global(.ct-series-e .ct-bar) {
+		stroke: rgb(128, 58, 0);
+		stroke-width: 20px;
+	}
+	:global(.ct-series-f .ct-bar) {
+		stroke: rgb(89, 10, 92);
+		stroke-width: 20px;
+	}
+	:global(.ct-series-g .ct-bar) {
+		stroke: rgb(29, 184, 204);
+		stroke-width: 20px;
+	}
+	:global(.ct-series-h .ct-bar) {
+		stroke: rgb(81, 172, 39);
+		stroke-width: 20px;
+	}
+	:global(.ct-series-i .ct-bar) {
+		stroke: rgb(165, 3, 3);
+		stroke-width: 20px;
+	}
 
-
-:global(.ct-label) {
-  color: white;
-}
+	:global(.ct-label) {
+		color: white;
+	}
 </style>

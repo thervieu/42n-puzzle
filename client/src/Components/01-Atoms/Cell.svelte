@@ -4,14 +4,21 @@
 	export let cell: number;
 	export let moveCallback: (row: number, col: number) => void;
 	export let clickable: boolean;
+	export let image: string[] | undefined | null;
 </script>
 
 <div
 	class="cell {cell === 0 ? 'empty' : ''}"
-	on:click={() => {clickable ? moveCallback(i, j) : 0}}
+	on:click={() => {
+		clickable ? moveCallback(i, j) : 0;
+	}}
 	role="presentation"
 >
-	{cell === 0 ? '' : cell}
+	{#if image && cell}
+		<img src={image[cell]} alt="cell {i}-{j}" height="80px" />
+	{:else}
+		{cell === 0 ? '' : cell}
+	{/if}
 </div>
 
 <style>
@@ -37,5 +44,10 @@
 	.cell.empty {
 		background-color: lightgray;
 		cursor: default;
+	}
+
+	img {
+		max-width: 100%;
+		max-height: 100%;
 	}
 </style>
