@@ -17,11 +17,6 @@
 <main class="globalLayout">
 	<Title value="N-Puzzle" />
 	<div class="section">
-		<Subtitle value="Size" />
-		<Range bind:value={size} />
-		<p>{size} {size}</p>
-	</div>
-	<div class="section">
 		<Subtitle value="Search" />
 		<div>
 			<label>
@@ -56,7 +51,7 @@
 		</div>
 	</div>
 	{#key size}
-		<Puzzle boardSize={size} search={search} heuristic={heuristic}/>
+		<Puzzle search={search} heuristic={heuristic}/>
 	{/key}
 </main>
 

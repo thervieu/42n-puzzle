@@ -10,16 +10,14 @@
 </script>
 
 <div
-	class="cell {cell === 1 ? 'empty' : ''}"
+	class="cell {cell === 0 ? 'empty' : ''}"
 	on:click={() => {
 		clickable ? moveCallback(i, j) : 0;
 	}}
 	role="presentation"
 >
-	{#if image && cell !== 1}
+	{#if image}
 		<img src={image[rev_board[cell]]} alt="cell {i}-{j}" height="80px" />
-	{:else}
-		{cell === 1 ? '' : cell}
 	{/if}
 </div>
 
