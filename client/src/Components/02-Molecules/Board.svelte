@@ -19,13 +19,12 @@
 		const image = new Image();
 
 		image.src = imagePath;
-
 		image.onload = () => {
 			const cellWidth = image.width / board.length;
 			const cellHeight = image.height / board.length;
 
 			for (let i = 0; i < board.length; i++) {
-				imagePaths[i] = [];
+				imagePaths[i] = []
 				for (let j = 0; j < board[i].length; j++) {
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					ctx.drawImage(
@@ -47,15 +46,17 @@
 	});
 </script>
 
-<img src={imagePath} alt="test" width={'240px'} />
+{#if (clickable === true)}
+	<img src={imagePath} alt="test" width={'240px'} />
+{/if}
 
 <div class="board" style:--size={board.length}>
 	{#each board as row, i}
 		{#each row as cell, j}
 			{#if isImageLoaded}
-				<Cell {i} {j} {moveCallback} {cell} {clickable} image={imagePaths.flat()} />
+				<Cell size={board.length} {i} {j} {moveCallback} {cell} {clickable} image={imagePaths.flat()} />
 			{:else}
-				<Cell {i} {j} {moveCallback} {cell} {clickable} />
+				<Cell size={board.length} {i} {j} {moveCallback} {cell} {clickable} image={null}/>
 			{/if}
 		{/each}
 	{/each}

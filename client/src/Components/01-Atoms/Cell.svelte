@@ -1,23 +1,25 @@
 <script lang="ts">
+	export let size: number;
 	export let i: number;
 	export let j: number;
 	export let cell: number;
 	export let moveCallback: (row: number, col: number) => void;
 	export let clickable: boolean;
 	export let image: string[] | undefined | null;
+	const rev_board = [4, 0, 1, 2, 5, 8, 7, 6, 3];
 </script>
 
 <div
-	class="cell {cell === 0 ? 'empty' : ''}"
+	class="cell {cell === 1 ? 'empty' : ''}"
 	on:click={() => {
 		clickable ? moveCallback(i, j) : 0;
 	}}
 	role="presentation"
 >
-	{#if image && cell}
-		<img src={image[cell]} alt="cell {i}-{j}" height="80px" />
+	{#if image && cell !== 1}
+		<img src={image[rev_board[cell]]} alt="cell {i}-{j}" height="80px" />
 	{:else}
-		{cell === 0 ? '' : cell}
+		{cell === 1 ? '' : cell}
 	{/if}
 </div>
 
