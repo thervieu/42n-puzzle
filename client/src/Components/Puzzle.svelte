@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount, createEventDispatcher } from 'svelte';
 	import Board from './02-Molecules/Board.svelte';
-	import { writable } from 'svelte/store';
-	import { TARGET_BOARD_3, TARGET_BOARD_4, TARGET_BOARD_5 } from '../const';
+	import Solution from './02-Molecules/Solution.svelte';
+	import InputsRow from './02-Molecules/InputsRow.svelte';
+	import { TARGET_BOARD_3 } from '../const';
 	import { averageMoves, averageSC, averageTC, averageTime } from '../Helpers/stats';
-	// import ApexCharts from "apexcharts"
 	import { BarChart } from 'chartist';
 
 	const labels = [
@@ -21,12 +21,6 @@
 		],
 		['uniform', 'greedy', 'mix'],
 		['hamming', 'manhattan', 'euclidian']
-	];
-	const titles = [
-		'Graph of avg time for 30 puzzles',
-		'Graph of avg moves for 30 puzzles',
-		'Graph of avg time complexity for 30 puzzles',
-		'Graph of avg space complexity for 30 puzzles'
 	];
 
 	export let search: string;
@@ -74,7 +68,7 @@
 		}
 		return 0;
 	};
-	
+
 	const generateRandomBoard = () => {
 		let tmp: number[][];
 		tmp = TARGET_BOARD_3;
@@ -94,8 +88,7 @@
 				arr.push(idx + 3);
 			}
 			var swapIndex = arr[Math.floor(Math.random() * arr.length)];
-			tmp[Math.floor(idx / 3)][idx % 3] =
-				tmp[Math.floor(swapIndex / 3)][swapIndex % 3];
+			tmp[Math.floor(idx / 3)][idx % 3] = tmp[Math.floor(swapIndex / 3)][swapIndex % 3];
 			tmp[Math.floor(swapIndex / 3)][swapIndex % 3] = 0;
 		}
 		return tmp;
@@ -104,7 +97,7 @@
 	let board: number[][] = generateRandomBoard();
 	async function makeRandomState() {
 		// Now set it to the real fetch promise
-		board = generateRandomBoard()
+		board = generateRandomBoard();
 		solution = [];
 	}
 	async function handleClick() {
@@ -117,35 +110,6 @@
 		time_complexity = result.time_complexity;
 		space_complexity = result.space_complexity;
 	}
-	const handleFullLeftClick = () => {
-		solution_pres = solution[0];
-	};
-	const handleLeftClick = () => {
-		let index = solution.indexOf(solution_pres);
-		if (index > 0) {
-			solution_pres = solution[index - 1];
-		}
-	};
-	const handlePlayClick = () => {
-		const interval = setInterval(function () {
-			let index = solution.indexOf(solution_pres);
-			if (index == solution.length - 1) {
-				clearInterval(interval);
-			} else {
-				handleRightClick();
-			}
-		}, 100);
-	};
-	const handleRightClick = () => {
-		let index = solution.indexOf(solution_pres);
-		if (index < solution.length - 1) {
-			solution_pres = solution[index + 1];
-		}
-	};
-	const handleFullRightClick = () => {
-		solution_pres = solution[solution.length - 1];
-	};
-
 
 	let emptyRow: number;
 	let emptyCol: number;
@@ -388,10 +352,9 @@
 				[averageSC(h), averageSC(m), averageSC(e)]
 			]
 		];
-		console.log(data);
 	}
+
 	let clickable = true;
-	let not_clickable = false;
 	let graph = 0;
 	let graphed = 0;
 
@@ -442,7 +405,7 @@
 			const cellHeight = image.height / board.length;
 
 			for (let i = 0; i < board.length; i++) {
-				imagePaths[i] = []
+				imagePaths[i] = [];
 				for (let j = 0; j < board[i].length; j++) {
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					ctx.drawImage(
@@ -464,110 +427,65 @@
 	});
 </script>
 
-<div>
+<div class="board-section">
 	<img src={imagePath} alt="test" width={'240px'} />
+	<br />
 	<button on:click={makeRandomState}>Randomize raccoon</button>
+
 	{#key board}
-		<Board {board} {moveCallback} {clickable} imagePaths={isImageLoaded ? imagePaths.flat() : null}/>
+		<Board
+			{board}
+			{moveCallback}
+			{clickable}
+			imagePaths={isImageLoaded ? imagePaths.flat() : null}
+		/>
 	{/key}
 	<button on:click={handleClick}>Solve</button>
-
 	{#if solution.length !== 0}
-		<p>Move {solution.indexOf(solution_pres)}</p>
-		{#key solution_pres}
-			<Board board={solution_pres} {moveCallback} clickable={not_clickable} imagePaths={isImageLoaded ? imagePaths.flat() : null}/>
-		{/key}
-		<button on:click={handleFullLeftClick}>FullLeft</button>
-		<button on:click={handleLeftClick}>Left</button>
-		<button on:click={handlePlayClick}>Play</button>
-		<button on:click={handleRightClick}>Right</button>
-		<button on:click={handleFullRightClick}>FullRight</button>
-		<div>
-			<p>Took {time}</p>
-			<p>Solved in {moves} moves</p>
-			<p>Time complexity {time_complexity}</p>
-			<p>Space complexity {space_complexity}</p>
-		</div>
+		<Solution
+			{time}
+			{moves}
+			{time_complexity}
+			{space_complexity}
+			{solution}
+			{solution_pres}
+			{moveCallback}
+			{imagePaths}
+			{isImageLoaded}
+		/>
 	{/if}
 	<div>
 		<button on:click={DoBenchmark}>Benchmark</button>
 		{#if data.length !== 0}
 			<div>
 				<p>Graph by:</p>
-				<label>
-					<input
-						checked={graph === 0}
-						on:change={changeGraph}
-						type="radio"
-						name="graph"
-						value={0}
-					/>
-					all
-				</label>
-				<label>
-					<input
-						checked={graph === 1}
-						on:change={changeGraph}
-						type="radio"
-						name="graph"
-						value={1}
-					/>
-					search
-				</label>
-				<label>
-					<input
-						checked={graph === 2}
-						on:change={changeGraph}
-						type="radio"
-						name="graph"
-						value={2}
-					/>
-					heuristic
-				</label>
+				<InputsRow
+					name={"graph"}
+					inputs={[
+						{ label: 'all', value: 0 },
+						{ label: 'search', value: 1 },
+						{ label: 'heuristic', value: 2 }
+					]}
+					checkedValue={graph}
+					handleChange={changeGraph}
+				/>
 			</div>
+			<!-- Graph Button -->
 			<div>
 				<p>Graph Of:</p>
-				<label>
-					<input
-						checked={graphed === 0}
-						on:change={changeGraphed}
-						type="radio"
-						name="graphed"
-						value={0}
-					/>
-					time
-				</label>
-				<label>
-					<input
-						checked={graphed === 1}
-						on:change={changeGraphed}
-						type="radio"
-						name="graphed"
-						value={1}
-					/>
-					moves
-				</label>
-				<label>
-					<input
-						checked={graphed === 2}
-						on:change={changeGraphed}
-						type="radio"
-						name="graphed"
-						value={2}
-					/>
-					time complexity
-				</label>
-				<label>
-					<input
-						checked={graphed === 3}
-						on:change={changeGraphed}
-						type="radio"
-						name="graphed"
-						value={3}
-					/>
-					space complexity
-				</label>
+				<InputsRow
+					name={"graphed"}
+					inputs={[
+						{ label: 'time', value: 0 },
+						{ label: 'moves', value: 1 },
+						{ label: 'time complexity', value: 2 },
+						{ label: 'space complexity', value: 3 }
+					]}
+					checkedValue={graphed}
+					handleChange={changeGraphed}
+				/>
 			</div>
+			<!-- Chart -->
 			<div id="bar-container">
 				<div id="bar-chart" />
 			</div>
@@ -576,6 +494,9 @@
 </div>
 
 <style lang="scss">
+	.board-section {
+		text-align: center;
+	}
 	#bar-chart {
 		background-color: rgb(55, 71, 79);
 		width: 1000px;
