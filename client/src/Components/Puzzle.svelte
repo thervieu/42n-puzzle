@@ -352,7 +352,6 @@
 				[averageSC(h), averageSC(m), averageSC(e)]
 			]
 		];
-		console.log(data);
 	}
 
 	let clickable = true;
@@ -461,6 +460,7 @@
 			<div>
 				<p>Graph by:</p>
 				<InputsRow
+					name={"graph"}
 					inputs={[
 						{ label: 'all', value: 0 },
 						{ label: 'search', value: 1 },
@@ -474,6 +474,7 @@
 			<div>
 				<p>Graph Of:</p>
 				<InputsRow
+					name={"graphed"}
 					inputs={[
 						{ label: 'time', value: 0 },
 						{ label: 'moves', value: 1 },
