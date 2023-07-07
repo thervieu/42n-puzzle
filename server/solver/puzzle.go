@@ -123,6 +123,7 @@ func numberOfInversions(puzzle []int) int {
 }
 
 // https://www.cs.princeton.edu/courses/archive/spring21/cos226/assignments/8puzzle/specification.php#:~:text=In%20summary%2C%20when%20n%20is,number%20of%20inversions%20is%20even.
+// https://www.youtube.com/watch?v=NuGDkmwEObM&list=PLB7540DEDD482705B&t=861s
 func IsSolvable(size int, p []int, goal []int) bool {
 	inv_puzzle := numberOfInversions(p)
 	inv_goal := numberOfInversions(goal)

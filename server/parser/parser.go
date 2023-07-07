@@ -19,6 +19,7 @@ func help() {
 	fmt.Println("  filename: must end with .txt and be a valid file.")
 	fmt.Println("            You can generate files by running the python script")
 	fmt.Println("  size: when filename is not given as argument, size creates a shuffled puzzle of the given size")
+	fmt.Println("example:  go run ./... --search=greedy --heuristic=euclidean --filename=file.txt")
 	os.Exit(0)
 }
 
