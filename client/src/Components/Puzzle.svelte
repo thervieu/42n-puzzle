@@ -63,6 +63,50 @@
 	let moves: number;
 	let time_complexity: number;
 	let space_complexity: number;
+
+	const findPos = (value: number, puzzle: number[][]) => {
+		for (let i = 0; i < puzzle.length; i++) {
+			for (let j = 0; j < puzzle[i].length; j++) {
+				if (puzzle[i][j] === value) {
+					return i * 3 + j;
+				}
+			}
+		}
+		return 0;
+	};
+	
+	const generateRandomBoard = () => {
+		let tmp: number[][];
+		tmp = TARGET_BOARD_3;
+		for (let i = 0; i < 100 + Math.floor(Math.random() * 100); i++) {
+			var idx = findPos(0, tmp);
+			var arr = [];
+			if (idx % 3 > 0) {
+				arr.push(idx - 1);
+			}
+			if (idx % 3 < 3 - 1) {
+				arr.push(idx + 1);
+			}
+			if (Math.floor(idx / 3) > 0 && idx > 3) {
+				arr.push(idx - 3);
+			}
+			if (Math.floor(idx / 3) < 3 - 1) {
+				arr.push(idx + 3);
+			}
+			var swapIndex = arr[Math.floor(Math.random() * arr.length)];
+			tmp[Math.floor(idx / 3)][idx % 3] =
+				tmp[Math.floor(swapIndex / 3)][swapIndex % 3];
+			tmp[Math.floor(swapIndex / 3)][swapIndex % 3] = 0;
+		}
+		return tmp;
+	};
+
+	let board: number[][] = generateRandomBoard();
+	async function makeRandomState() {
+		// Now set it to the real fetch promise
+		board = generateRandomBoard()
+		solution = [];
+	}
 	async function handleClick() {
 		// Now set it to the real fetch promise
 		const result = await solvePuzzle(board, search, heuristic);
@@ -102,44 +146,6 @@
 		solution_pres = solution[solution.length - 1];
 	};
 
-	const findPos = (value: number, puzzle: number[][]) => {
-		for (let i = 0; i < puzzle.length; i++) {
-			for (let j = 0; j < puzzle[i].length; j++) {
-				if (puzzle[i][j] === value) {
-					return i * 3 + j;
-				}
-			}
-		}
-		return 0;
-	};
-
-	const generateRandomBoard = () => {
-		let tmp: number[][];
-		tmp = TARGET_BOARD_3;
-		for (let i = 0; i < 100 + Math.floor(Math.random() * 100); i++) {
-			var idx = findPos(0, tmp);
-			var arr = [];
-			if (idx % 3 > 0) {
-				arr.push(idx - 1);
-			}
-			if (idx % 3 < 3 - 1) {
-				arr.push(idx + 1);
-			}
-			if (Math.floor(idx / 3) > 0 && idx > 3) {
-				arr.push(idx - 3);
-			}
-			if (Math.floor(idx / 3) < 3 - 1) {
-				arr.push(idx + 3);
-			}
-			var swapIndex = arr[Math.floor(Math.random() * arr.length)];
-			tmp[Math.floor(idx / 3)][idx % 3] =
-				tmp[Math.floor(swapIndex / 3)][swapIndex % 3];
-			tmp[Math.floor(swapIndex / 3)][swapIndex % 3] = 0;
-		}
-		return tmp;
-	};
-
-	let board: number[][] = generateRandomBoard();
 
 	let emptyRow: number;
 	let emptyCol: number;
@@ -460,7 +466,10 @@
 
 <div>
 	<img src={imagePath} alt="test" width={'240px'} />
-	<Board {board} {moveCallback} {clickable} imagePaths={isImageLoaded ? imagePaths.flat() : null}/>
+	<button on:click={makeRandomState}>Randomize raccoon</button>
+	{#key board}
+		<Board {board} {moveCallback} {clickable} imagePaths={isImageLoaded ? imagePaths.flat() : null}/>
+	{/key}
 	<button on:click={handleClick}>Solve</button>
 
 	{#if solution.length !== 0}
