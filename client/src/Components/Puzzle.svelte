@@ -221,7 +221,7 @@
 		for (let k = 0; k < 3; k++) {
 			let p1 = generateRandomBoard();
 			let p2 = generateRandomBoard();
-			let p = generateRandomBoard();
+			let p3 = generateRandomBoard();
 			let p4 = generateRandomBoard();
 			let p5 = generateRandomBoard();
 			let p6 = generateRandomBoard();
