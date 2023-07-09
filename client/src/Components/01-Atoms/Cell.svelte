@@ -5,6 +5,7 @@
 	export let cell: number;
 	export let moveCallback: (row: number, col: number) => void;
 	export let clickable: boolean;
+	export let isSolved: boolean;
 	export let image: string[] | undefined | null;
 	const rev_board = [4, 0, 1, 2, 5, 8, 7, 6, 3];
 </script>
@@ -16,7 +17,7 @@
 	}}
 	role="presentation"
 >
-	{#if image}
+	{#if image && (cell !== 0 || !isSolved)}
 		<img src={image[rev_board[cell]]} alt="cell {i}-{j}" height="80px" />
 	{/if}
 </div>
