@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let name: string;
-	export let inputs: { label: string; value: number }[];
-	export let checkedValue: number;
+	export let inputs: string[];
+	export let checkedValue: string;
 	export let handleChange: (e: any) => void;
 </script>
 
@@ -11,11 +11,11 @@
 			<input
 				type="radio"
 				name={name}
-				value={input.value}
-				checked={checkedValue === input.value}
+				value={input}
+				checked={checkedValue === input}
 				on:change={handleChange}
 			/>
-			{input.label}
+			{input}
 		</label>
 	{/each}
 </div>

@@ -25,5 +25,6 @@
 		grid-template-rows: repeat(var(--size), 1fr);
 		width: 240px;
 		margin: auto;
+		justify-content: center
 	}
 </style>

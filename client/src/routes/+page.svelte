@@ -1,15 +1,16 @@
-<script>
+<script lang="ts">
 	import Range from '../Components/01-Atoms/Range.svelte';
 	import Subtitle from '../Components/01-Atoms/Subtitle.svelte';
 	import Title from '../Components/01-Atoms/Title.svelte';
+	import InputsRow from '../Components/02-Molecules/InputsRow.svelte';
 	import Puzzle from '../Components/Puzzle.svelte';
 	let search = "uniform";
 	let heuristic = "hamming";
 	let size = 3;
-	function onChangeSearch(event) {
+	function onChangeSearch(event: any) {
 		search = event.currentTarget.value;
 	}
-	function onChangeHeuristic(event) {
+	function onChangeHeuristic(event: any) {
 		heuristic = event.currentTarget.value;
 	}
 </script>
@@ -17,41 +18,25 @@
 <main class="globalLayout">
 	<Title value="N-Puzzle" />
 	<div class="section">
+		<Subtitle value="Size" />
+		<Range bind:value={size} /> 
+	</div>
+	<div class="section">
 		<Subtitle value="Search" />
-		<div>
-			<label>
-				<input checked={search === "uniform"} on:change={onChangeSearch} type="radio" name="search" value={"uniform"} />
-				uniform cost
-			</label>
-			<label>
-				<input checked={search === "greedy"} on:change={onChangeSearch} type="radio" name="search" value={"greedy"} />
-				greedy
-			</label>
-			<label>
-				<input checked={search === "both"} on:change={onChangeSearch} type="radio" name="search" value={"both"} />
-				both
-			</label>
-		</div>
+		<InputsRow name={"search"}
+			inputs={["uniform", "greedy", "both"]}
+			checkedValue={"uniform"}
+			handleChange={onChangeSearch} />
 	</div>
 	<div class="section">
 		<Subtitle value="Heuristic" />
-		<div>
-			<label>
-				<input checked={heuristic === "hamming"} on:change={onChangeHeuristic} type="radio" name="heuristic" value={"hamming"}  />
-				hamming
-			</label>
-			<label>
-				<input checked={heuristic === "manhattan"} on:change={onChangeHeuristic} type="radio" name="heuristic" value={"manhattan"} />
-				manhattan
-			</label>
-			<label>
-				<input checked={heuristic === "euclidean"} on:change={onChangeHeuristic} type="radio" name="heuristic" value={"euclidean"} />
-				euclidean
-			</label>
-		</div>
+		<InputsRow name={"heuristic"}
+			inputs={["hamming", "manhattan", "euclidean"]}
+			checkedValue={"hamming"}
+			handleChange={onChangeHeuristic} />
 	</div>
 	{#key size}
-		<Puzzle search={search} heuristic={heuristic}/>
+		<Puzzle size={size} search={search} heuristic={heuristic} />
 	{/key}
 </main>
 
