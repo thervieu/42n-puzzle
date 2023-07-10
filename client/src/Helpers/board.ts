@@ -45,7 +45,6 @@ export const generateRandomBoard = (size: number) => {
     } else {
         tmp = TARGET_BOARD_5;
     }
-    console.log('taget_board', tmp)
     for (let i = 0; i < 100 + Math.floor(Math.random() * 100); i++) {
         var idx = findPos(0, tmp);
         var arr = [];
