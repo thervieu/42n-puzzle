@@ -15,7 +15,7 @@ func help() {
 	fmt.Printf("You must set search, heuristic options and the filename to read the puzzle from\n\n")
 	fmt.Println("Available Options:")
 	fmt.Println("  search: uniform or greedy")
-	fmt.Println("  heuristic: hamming, manhattan or linear_conflict")
+	fmt.Println("  heuristic: hamming, manhattan or euclidean")
 	fmt.Println("  filename: must end with .txt and be a valid file.")
 	fmt.Println("            You can generate files by running the python script")
 	fmt.Println("  size: when filename is not given as argument, size creates a shuffled puzzle of the given size")
