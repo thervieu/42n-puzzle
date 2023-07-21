@@ -11,12 +11,9 @@
 			'uniform euclidean',
 			'greedy hamming',
 			'greedy manhattan',
-			'greedy euclidean',
-			'mix hamming',
-			'mix manhattan',
-			'mix euclidean'
+			'greedy euclidean'
 		],
-		['uniform', 'greedy', 'mix'],
+		['uniform', 'greedy'],
 		['hamming', 'manhattan', 'euclidian']
 	];
 	let graph = "all";
@@ -68,7 +65,7 @@
 		b_h = [];
 		b_m = [];
 		b_e = [];
-		let searches = ['uniform', 'greedy', 'both'];
+		let searches = ['uniform', 'greedy'];
 		let heuristics = ['hamming', 'manhattan', 'euclidean'];
 		for (let k = 0; k < 3; k++) {
 			let p1 = generateRandomBoard(3);
@@ -141,39 +138,14 @@
 						g_e.push(r5);
 						g_e.push(r6);
 					}
-					if (searches[i] === 'both' && heuristics[j] === 'hamming') {
-						b_h.push(r1);
-						b_h.push(r2);
-						b_h.push(r3);
-						b_h.push(r4);
-						b_h.push(r5);
-						b_h.push(r6);
-					}
-					if (searches[i] === 'both' && heuristics[j] === 'manhattan') {
-						b_m.push(r1);
-						b_m.push(r2);
-						b_m.push(r3);
-						b_m.push(r4);
-						b_m.push(r5);
-						b_m.push(r6);
-					}
-					if (searches[i] === 'both' && heuristics[j] === 'euclidean') {
-						b_e.push(r1);
-						b_e.push(r2);
-						b_e.push(r3);
-						b_e.push(r4);
-						b_e.push(r5);
-						b_e.push(r6);
-					}
 				}
 			}
 		}
 		let u = u_h.concat(u_m).concat(u_e);
 		let g = g_h.concat(g_m).concat(g_e);
-		let b = b_h.concat(b_m).concat(b_e);
-		let h = b_h.concat(u_h).concat(g_h);
-		let m = b_m.concat(u_m).concat(g_m);
-		let e = b_e.concat(u_e).concat(g_e);
+		let h = u_h.concat(g_h);
+		let m = u_m.concat(g_m);
+		let e = u_e.concat(g_e);
 		data = [
 			[
 				[
@@ -183,9 +155,6 @@
 					averageTime(g_h),
 					averageTime(g_m),
 					averageTime(g_e),
-					averageTime(b_h),
-					averageTime(b_m),
-					averageTime(b_e)
 				],
 				[
 					averageMoves(u_h),
@@ -194,9 +163,6 @@
 					averageMoves(g_h),
 					averageMoves(g_m),
 					averageMoves(g_e),
-					averageMoves(b_h),
-					averageMoves(b_m),
-					averageMoves(b_e)
 				],
 				[
 					averageTC(u_h),
@@ -205,9 +171,6 @@
 					averageTC(g_h),
 					averageTC(g_m),
 					averageTC(g_e),
-					averageTC(b_h),
-					averageTC(b_m),
-					averageTC(b_e)
 				],
 				[
 					averageSC(u_h),
@@ -216,16 +179,13 @@
 					averageSC(g_h),
 					averageSC(g_m),
 					averageSC(g_e),
-					averageSC(b_h),
-					averageSC(b_m),
-					averageSC(b_e)
 				]
 			],
 			[
-				[averageTime(u), averageTime(g), averageTime(b)],
-				[averageMoves(u), averageMoves(g), averageMoves(b)],
-				[averageTC(u), averageTC(g), averageTC(b)],
-				[averageSC(u), averageSC(g), averageSC(b)]
+				[averageTime(u), averageTime(g)],
+				[averageMoves(u), averageMoves(g)],
+				[averageTC(u), averageTC(g)],
+				[averageSC(u), averageSC(g)]
 			],
 			[
 				[averageTime(h), averageTime(m), averageTime(e)],

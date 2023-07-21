@@ -39,8 +39,7 @@ func ParseArgs(args []string) (size int, search string, heuristic string, fileNa
 			len(strings.Split(arg, "=")) == 2 {
 
 			if strings.Split(arg, "=")[1] != "uniform" &&
-				strings.Split(arg, "=")[1] != "greedy" &&
-				strings.Split(arg, "=")[1] != "sum" {
+				strings.Split(arg, "=")[1] != "greedy" {
 
 				return 0, "", "", "", errors.New("error: wrong argument for search '" + strings.Split(arg, "=")[1] + "'")
 			}

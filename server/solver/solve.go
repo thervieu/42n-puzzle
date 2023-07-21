@@ -128,8 +128,7 @@ func Solve(size int, initPuzzle []int, heuristic string, search string, print bo
 
 	goal := MakeGoal(size)
 	if IsSolvable(size, initPuzzle, goal) == false {
-		fmt.Println("This puzzle is unsolvable ! Please try another one")
-		return SolveData{}, errors.New("Unsolvable")
+		return SolveData{}, errors.New("This puzzle is unsolvable ! Please try another one")
 	}
 
 	openQueue := initPriorityQueue(size, heuristic, search, initPuzzle, goal)
@@ -176,11 +175,8 @@ func Solve(size int, initPuzzle []int, heuristic string, search string, print bo
 				var priority float32
 				if search == "greedy" {
 					priority = getHeuristic(size, heuristic, search, children, goal)
-				}
-				if search == "uniform" {
-					priority = float32(current.move)
-				} else {
-					priority = (float32(current.move) * 2) + getHeuristic(size, heuristic, search, children, goal)
+				} else if search == "uniform" {
+					priority = current.priority + getHeuristic(size, heuristic, search, children, goal)
 				}
 				timeComplexity += 1
 				newPuzzle := &State{

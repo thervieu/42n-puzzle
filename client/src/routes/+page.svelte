@@ -24,8 +24,8 @@
 	<div class="section">
 		<Subtitle value="Search" />
 		<InputsRow name={"search"}
-			inputs={["uniform", "greedy", "both"]}
-			checkedValue={"uniform"}
+			inputs={["greedy", "uniform"]}
+			checkedValue={"greedy"}
 			handleChange={onChangeSearch} />
 	</div>
 	<div class="section">

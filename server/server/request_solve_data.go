@@ -21,7 +21,7 @@ func SanitizeHeuristic(heuristic string) (err error) {
 }
 
 func SanitizeSearch(search string) (err error) {
-	if search != "uniform" && search != "greedy" && search != "both" {
+	if search != "uniform" && search != "greedy" {
 		return errors.New("Bad Request: search has a wrong value")
 	}
 	return nil
@@ -52,7 +52,6 @@ func VerifValuesSlice(arr []int, typeError bool) error {
 }
 
 func (r *RequestSolveData) SanitizePuzzle() error {
-
 	int_sqrt := int(math.Sqrt(float64(len(r.Puzzle))))
 	if int_sqrt*int_sqrt != len(r.Puzzle) {
 		return errors.New("Bad Request: Puzzle length is not a squared number")
